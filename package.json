@@ -3,7 +3,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "bun --bun vite dev",
+		"dev": "bun --bun run backend & bun --bun vite dev",
+		"frontend": "bun --bun vite dev",
+		"backend": "cd backend && bun run dev",
 		"build": "bun --bun vite build",
 		"preview": "bun --bun vite preview"
 	},
