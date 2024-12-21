@@ -1,5 +1,9 @@
 # Setup
 
-Copy .env into .env.example and fill out the values.
+**BunJS is required to run this!**
 
-You can leave the spotify_token blank and get a token from the app itself. Authenticate using the password set in the .env file!
+**Follow the instructions in the backend folder before following these instructions**
+
+1. Install all bun packages: `bun install`
+2. Make any changes necessary to the api URL in the default page file
+3. You're done, deploy the app and backend in dev mode using `bun dev`

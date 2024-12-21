@@ -48,6 +48,9 @@ declare module "bun" {
 
 // This is what actually contacts the spotify api every 2 seconds
 async function cronJob() {
+    if (!Bun.env.SPOTIFY_TOKEN) {
+        return;
+    }
     let token = await genAuthTokenSpot();
     let rq = await fetch(
         "https://api.spotify.com/v1/me/player/currently-playing",
@@ -81,7 +84,7 @@ async function cronJob() {
         album: song.item.album.name,
         image_url: song.item.album.images[0].url,
         artists: artists,
-        last_changed: song.timestamp
+        last_changed: song.timestamp,
     });
 }
 
@@ -128,7 +131,6 @@ function getPlaying() {
 }
 
 export const plugin = new Elysia({ prefix: "whatamiplayin" })
-    .decorate("playin", getPlaying())
     .use(
         cron({
             name: "getSpotifyStatus",
@@ -138,7 +140,7 @@ export const plugin = new Elysia({ prefix: "whatamiplayin" })
             },
         })
     )
-    .get("/", ({ playin }) => playin, {
+    .get("/", () => getPlaying(), {
         response: t.Object({
             is_playing: t.Boolean(),
             title: t.String(),

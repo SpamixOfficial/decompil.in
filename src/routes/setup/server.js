@@ -1,3 +1,6 @@
+// DEPRECATED IN FAVOR OF NEW BACKEND!
+
+
 import { redirect } from "@sveltejs/kit";
 import {
     SPOTIFY_TOKEN,
@@ -9,7 +12,7 @@ import {
 
 import queryString from "querystring";
 
-export async function GET({ request }) {
+async function GET({ request }) {
     // Return to main page if spotify thingy is already set up
     if (SPOTIFY_TOKEN) {
         return redirect(302, "/");

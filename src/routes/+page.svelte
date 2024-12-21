@@ -130,7 +130,7 @@
 
     onMount(() => {
         async function fetchData() {
-            let playin = await fetch("/whatamiplayin");
+            let playin = await fetch("http://localhost:3000/whatamiplayin");
             let spot_data;
             if (playin.status != 200) {
                 spot_data = {

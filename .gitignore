@@ -16,6 +16,9 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# log
+log
+
 .vscode
 
 # Vite

@@ -1,7 +1,10 @@
+// DEPRECATED IN FAVOR OF NEW BACKEND!
+
+
 import { error, json } from "@sveltejs/kit";
 import { gen_auth } from "../../lib/server/spotify-auth";
 
-export async function GET() {
+async function GET() {
     let token = await gen_auth();
     let rq = await fetch(
         "https://api.spotify.com/v1/me/player/currently-playing",

@@ -6,10 +6,15 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@bogeychan/elysia-logger": "^0.1.6",
+    "@elysiajs/cors": "^1.1.1",
     "@elysiajs/cron": "^1.1.1",
     "@elysiajs/swagger": "^1.1.6",
-    "querystring": "^0.2.1",
-    "elysia": "latest"
+    "dateformat": "^5.0.3",
+    "elysia": "latest",
+    "elysia-helmet": "^2.0.0",
+    "pino-pretty": "^13.0.0",
+    "querystring": "^0.2.1"
   },
   "devDependencies": {
     "bun-types": "latest"
