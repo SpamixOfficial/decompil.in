@@ -6,6 +6,7 @@
     import { onMount } from "svelte";
     import { prominent } from "color.js";
     import TerminalWindow from "./TerminalWindow.svelte";
+    import Biography from "./Biography.svelte";
     let bkgGradient = $state(true);
     let terminalWindow = $state(true);
     let showSpot = $state(true);
@@ -22,14 +23,19 @@
         color("#23d5ab"),
     ];
     let defaultTerminalBorderColor = color("#23a6d5");
+    let defaultTerminalButtonHoverColor = color("#23a6d51e");
     let defaultTextColor = color("#ffffff");
     let colorMap = {
         gradientColors: defaultColors,
         textColor: defaultTextColor,
         terminalBorderColor: defaultTerminalBorderColor,
+        terminalButtonHoverColor: defaultTerminalButtonHoverColor
     };
     const textColor = tweened(defaultTextColor, { interpolate });
     const terminalBorderColor = tweened(defaultTerminalBorderColor, {
+        interpolate,
+    });
+    const terminalButtonHoverColor = tweened(defaultTerminalButtonHoverColor, {
         interpolate,
     });
     const colors = tweened(defaultColors, { interpolate });
@@ -42,6 +48,10 @@
         document.body.style.setProperty(
             "--terminalBorderColor",
             $terminalBorderColor
+        );
+        document.body.style.setProperty(
+            "--terminalButtonHoverColor",
+            $terminalButtonHoverColor
         );
     });
 
@@ -126,6 +136,8 @@
             border_color[1],
             border_color[2]
         );
+        colorMap.terminalButtonHoverColor = colorMap.terminalBorderColor
+        colorMap.terminalButtonHoverColor.opacity = 0.3
     }
 
     onMount(() => {
@@ -144,6 +156,7 @@
                 $colors = defaultColors;
                 $textColor = defaultTextColor;
                 $terminalBorderColor = defaultTerminalBorderColor;
+                $terminalButtonHoverColor = defaultTerminalButtonHoverColor;
             } else {
                 showSpot = true;
                 spotImgSrc = spot_data.image_url;
@@ -169,15 +182,15 @@
             $colors = colorMap.gradientColors;
             $textColor = colorMap.textColor;
             $terminalBorderColor = colorMap.terminalBorderColor;
+            $terminalButtonHoverColor = colorMap.terminalButtonHoverColor;
         }
     });
 </script>
 
 <div class:bkgGradient></div>
-<TerminalWindow height="50vh" width="30vw">
-    <p>Welcome to decompil.in, the homepage of SpamixOfficial.</p>
-    <p>Who am I?</p>
-</TerminalWindow>
+
+<Biography />
+
 {#if showSpot}
     <div transition:scale style="display: inline-block;">
         <TerminalWindow width="20vw">

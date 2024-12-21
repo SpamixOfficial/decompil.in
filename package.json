@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "bun --bun run backend & bun --bun vite dev",
 		"frontend": "bun --bun vite dev",
-		"backend": "cd backend && bun run dev",
+		"backend": "bun run --watch backend/src/*",
 		"build": "bun --bun vite build",
 		"preview": "bun --bun vite preview"
 	},
