@@ -14,6 +14,7 @@
 
     :global(html, body) {
         font-family: "Ubuntu Mono";
+        color: white;
         margin: 0;
         height: 100%;
         overflow: hidden;

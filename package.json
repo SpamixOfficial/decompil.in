@@ -23,6 +23,7 @@
 		"flowbite": "^2.5.2",
 		"flowbite-svelte": "^0.47.3",
 		"querystring": "^0.2.1",
-		"svelte-adapter-bun": "^0.5.2"
+		"svelte-adapter-bun": "^0.5.2",
+		"svelte-markdown": "^0.4.1"
 	}
 }

@@ -5,8 +5,9 @@
     import { color, rgb, interpolate } from "d3";
     import { onMount } from "svelte";
     import { prominent } from "color.js";
-    import TerminalWindow from "./TerminalWindow.svelte";
-    import Biography from "./Biography.svelte";
+    import TerminalWindow from "$lib/TerminalWindow.svelte";
+    import Biography from "$lib/Biography.svelte";
+    let pageIsLoaded = $state(false);
     let bkgGradient = $state(true);
     let terminalWindow = $state(true);
     let showSpot = $state(true);
@@ -173,9 +174,11 @@
                 setBkg();
             }
         }
-
+        
         const interval = setInterval(fetchData, 3000);
         fetchData();
+
+        pageIsLoaded = true;
 
         return () => clearInterval(interval);
         function setBkg() {
@@ -188,18 +191,23 @@
 </script>
 
 <div class:bkgGradient></div>
-
-<Biography />
-
-{#if showSpot}
-    <div transition:scale style="display: inline-block;">
-        <TerminalWindow width="20vw">
-            <img transition:fade draggable="false" src={spotImgSrc} alt="Spotify Cover Art" />
-            <p>{@html spotArtist}</p>
-            <p>{spotTitle}</p>
-        </TerminalWindow>
+<!--Hotfix because the page glitches before style is properly loaded-->
+{#if pageIsLoaded}
+    <div transition:scale>
+        <Biography />
     </div>
+
+    {#if showSpot}
+        <div transition:scale style="display: inline-block;">
+            <TerminalWindow width="20vw">
+                <img transition:fade draggable="false" src={spotImgSrc} alt="Spotify Cover Art" />
+                <p>{@html spotArtist}</p>
+                <p>{spotTitle}</p>
+            </TerminalWindow>
+        </div>
+    {/if}
 {/if}
+
 
 <svelte:head>
     <link
