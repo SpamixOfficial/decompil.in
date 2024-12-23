@@ -35,7 +35,15 @@ const app = new Elysia()
         })
     )
     .use(cors())
-    .use(swagger())
+    .use(swagger({
+        exclude: ["/setup"],
+        documentation: {
+            info: {
+                title: 'Decompil.in API',
+                version: '1.0.0'
+            }
+        }
+    }))
     .use(setupPlugin)
     .use(playPlugin)
     .listen(3000);
