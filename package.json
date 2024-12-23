@@ -1,6 +1,6 @@
 {
 	"name": "decompil.in-web",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
 		"dev": "bun --bun run backend & bun --bun vite dev",
@@ -20,8 +20,6 @@
 		"@neodrag/svelte": "^2.0.6",
 		"color.js": "^1.2.0",
 		"d3": "^7.9.0",
-		"flowbite": "^2.5.2",
-		"flowbite-svelte": "^0.47.3",
 		"querystring": "^0.2.1",
 		"svelte-adapter-bun": "^0.5.2",
 		"svelte-markdown": "^0.4.1"

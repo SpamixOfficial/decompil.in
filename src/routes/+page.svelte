@@ -1,7 +1,7 @@
 <script>
     import { tweened } from "svelte/motion";
-    import { Img } from "flowbite-svelte";
     import { scale, fade } from "svelte/transition";
+    import Icon from "@iconify/svelte";
     import { color, rgb, interpolate } from "d3";
     import { onMount } from "svelte";
     import { prominent } from "color.js";
@@ -9,7 +9,7 @@
     import Biography from "$lib/Biography.svelte";
     let pageIsLoaded = $state(false);
     let bkgGradient = $state(true);
-    let terminalWindow = $state(true);
+    let spotHelpPage = $state(false);
     let showSpot = $state(true);
     let spotImgSrc = $state("");
     let spotArtist = $state("");
@@ -189,27 +189,32 @@
         }
     });
 </script>
-
 <div class:bkgGradient></div>
 <!--Hotfix because the page glitches before style is properly loaded-->
 {#if pageIsLoaded}
-    <div transition:scale>
-        <Biography />
-    </div>
-
-    {#if showSpot}
-        <div transition:scale style="display: inline-block;">
-            <TerminalWindow width="20vw">
-                <img transition:fade draggable="false" src={spotImgSrc} alt="Spotify Cover Art" />
-                <p>{@html spotArtist}</p>
-                <p>{spotTitle}</p>
-            </TerminalWindow>
+    <div style="display: flex;">
+        <div transition:scale alt="I'm draggable!">
+            <Biography />
         </div>
-    {/if}
+
+        {#if showSpot}
+            <div transition:scale style="display: inline-block;" alt="Me too!">
+                <TerminalWindow width="20vw">
+                    <img transition:fade draggable="false" src={spotImgSrc} alt="Spotify Cover Art" />
+                    <p>{@html spotArtist}</p>
+                    <p>{spotTitle}</p>
+                    <hr class="spotHr">
+                    <i><p>Spamix's current playing track</p></i>
+                </TerminalWindow>
+            </div>
+        {/if}
+    </div>
 {/if}
 
 
+
 <svelte:head>
+    <title>Decompilin</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet"
@@ -221,21 +226,45 @@
         background-color: black;
         --bkgGrad: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
     }
+
+    @keyframes gradientAnim {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
     .bkgGradient {
         background: var(--bkgGrad);
         background-color: black;
-        transition: all 1000ms linear;
         position: fixed;
         inset: 1rem;
         filter: blur(100px);
         z-index: -1;
+        animation: gradientAnim 10s ease infinite;
         pointer-events: none;
     }
+
+
     :global(p) {
         color: var(--textColor);
     }
     :global(h1) {
         color: var(--textColor);
+    }
+    :global(a) {
+        color: inherit;
+    }
+    .spotHr {
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--terminalBorderColor);
+        border-radius: 15px;
     }
     img {
         grid-area: 1 / 1;

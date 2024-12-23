@@ -1,5 +1,5 @@
 <script>
-    let { children, width, height } = $props();
+    let { children, width, height, style } = $props();
     import { draggable } from "@neodrag/svelte";
     let terminalWindowClass = $state(true);
     let terminalWindow;
@@ -17,7 +17,7 @@
     }}
     class:terminalWindowClass
     bind:this={terminalWindow}
-    style="--width: {width}; --height: {height}"
+    style="--width: {width}; --height: {height}; {style}"
 >
     {@render children()}
 </div>
@@ -36,6 +36,6 @@
         cursor: move;
         margin: 5px;
         padding: 5px;
-        display: inline-block;
+        display: block;
     }
 </style>
