@@ -9,7 +9,6 @@ Well I am dude born 2008 in Stockholm, Sweden, who does
 - music production
 - CTFs
 
-for fun :-)
 
 Now you're probably asking ***"where are your projects?"***.
 

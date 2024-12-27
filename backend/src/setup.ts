@@ -17,7 +17,6 @@ export const setupPlugin = new Elysia().get(
     async ({ redirect, set, query }) => {
         // Auth and "already-setup" checking
         if (Bun.env.SPOTIFY_TOKEN !== undefined) {
-            console.log("yo");
             set.status = 404;
             return null;
         }
@@ -32,7 +31,6 @@ export const setupPlugin = new Elysia().get(
                 `https://accounts.spotify.com/authorize?client_id=${Bun.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${Bun.env.CALLBACK}&scope=user-read-currently-playing`
             );
         }
-        console.log(query.code);
 
         let resp = await fetch("https://accounts.spotify.com/api/token", {
             method: "POST",
