@@ -7,6 +7,7 @@
     import { scale } from "svelte/transition";
     import SvelteMarkdown from "svelte-markdown";
     import { onMount } from "svelte";
+    import MarkdownImage from "./MarkdownImage.svelte";
     let { mobile, mobileVertical, mobileFullSize } = $props();
     let height = $state(mobile == "true" ? 95 : 70);
     let width = $state(mobile == "true" ? 70 : 30);
@@ -49,7 +50,7 @@
     {#each Object.entries(pages) as [id, page]}
         {#if currentPage == id}
             <div in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
-                <SvelteMarkdown source={page.source} />
+                <SvelteMarkdown source={page.source} renderers={{ image: MarkdownImage }}/>
             </div>
         {/if}
     {/each}
@@ -59,7 +60,7 @@
                 <button
                     class={mobile == "false" ? "tabButton" : "mobileTabButton"}
                     class:last={Object.values(pages).length == id}
-                    onclick={(currentPage = id)}>{page.title}</button
+                    onclick={() => currentPage = id}>{page.title}</button
                 >
             {/each}
         </div>

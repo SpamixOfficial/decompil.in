@@ -4,7 +4,7 @@
 
 {@render children()}
 
-<style lang="scss">
+<style lang="postcss">
     :global(p) {
         font-family: "Ubuntu Mono";
     }
