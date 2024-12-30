@@ -2,9 +2,11 @@ import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { plugin as playPlugin } from "./whatamiplayin";
 import { setupPlugin } from "./setup";
+import { ctfPlugin } from "./ctf";
 import { helmet } from "elysia-helmet";
 import { logger, fileLogger } from "@bogeychan/elysia-logger";
 import cors from "@elysiajs/cors";
+
 
 const app = new Elysia()
     .use(
@@ -46,6 +48,7 @@ const app = new Elysia()
     }))
     .use(setupPlugin)
     .use(playPlugin)
+    .use(ctfPlugin)
     .listen(3000);
 
 console.log(

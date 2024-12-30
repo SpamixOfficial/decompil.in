@@ -7,7 +7,7 @@ declare module "bun" {
         SPOTIFY_CLIENT_ID: string;
         SPOTIFY_CLIENT_SECRET: string;
         SPOTIFY_TOKEN: string | undefined;
-        SETUP_PWD: string;
+        BACKEND_PWD: string;
         CALLBACK: string;
     }
 }
@@ -21,7 +21,7 @@ export const setupPlugin = new Elysia().get(
             return null;
         }
 
-        if (query.auth != Bun.env.SETUP_PWD) {
+        if (query.auth != Bun.env.BACKEND_PWD) {
             set.status = 401;
             return null;
         }
