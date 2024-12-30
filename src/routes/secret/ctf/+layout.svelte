@@ -9,5 +9,4 @@
     :global(html, body, h1, p) {
         all: initial;
     }
-
 </style>

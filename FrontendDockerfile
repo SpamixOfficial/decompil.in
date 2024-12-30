@@ -1,0 +1,28 @@
+# Use the Bun image as the base image
+FROM oven/bun:latest AS builder
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy build dependencies
+COPY bun.lockb .env package.json *.config.js .npmrc ./
+COPY src/ src/
+COPY static/ static/
+
+# Run build and install process
+RUN bun install
+RUN bun run build
+
+# Copy from build process into deployed instance
+FROM oven/bun:latest AS deployer
+
+WORKDIR /app
+
+# Copy from build process
+COPY --from=builder /app/build/ .
+
+# Expose the port on which the API will listen
+EXPOSE 3000
+
+# Run the server when the container launches
+CMD ["bun", "start"]

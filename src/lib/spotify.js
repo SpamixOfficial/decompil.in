@@ -1,5 +1,7 @@
+import { PUBLIC_API_URL as api_server } from "$env/static/public";
+
 export async function fetchData() {
-    let playin = await fetch("http://localhost:3000/whatamiplayin");
+    let playin = await fetch(`${api_server}/whatamiplayin`);
     let spot_data;
     if (playin.status != 200) {
         spot_data = {
