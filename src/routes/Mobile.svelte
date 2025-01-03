@@ -12,7 +12,7 @@
     let spotWidth = $state(30);
     let spotHeight = $state(95);
     let verticalDisplay = $state(false);
-    let showSpot = $state(true);
+    let showSpot = $state(false);
     let spotImgSrc = $state("");
     let spotArtist = $state("");
     let spotTitle = $state("");

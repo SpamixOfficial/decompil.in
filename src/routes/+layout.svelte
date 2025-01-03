@@ -2,7 +2,9 @@
     let { children } = $props();
 </script>
 
-{@render children()}
+<div data-sveltekit-reload>
+    {@render children()}
+</div>
 
 <style lang="postcss">
     :global(p) {
@@ -13,6 +15,7 @@
     }
 
     :global(html, body) {
+        all: initial;
         font-family: "Ubuntu Mono";
         color: white;
         margin: 0;

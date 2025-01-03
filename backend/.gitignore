@@ -26,6 +26,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# bruno
+/decompilin-backend
+
+# drizzle
+/drizzle
+
 # local env files
 .env.local
 .env.development.local

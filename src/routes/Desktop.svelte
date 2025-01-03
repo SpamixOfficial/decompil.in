@@ -10,7 +10,7 @@
     let pageIsLoaded = $state(false);
     let bkgGradient = $state(true);
     let spotHelpPage = $state(false);
-    let showSpot = $state(true);
+    let showSpot = $state(false);
     let spotImgSrc = $state("");
     let spotArtist = $state("");
     let spotTitle = $state("");

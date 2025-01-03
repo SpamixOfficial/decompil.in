@@ -140,7 +140,7 @@ function getPlaying() {
     return Bun.env.SPOTIFY_DATA;
 }
 
-export const plugin = new Elysia({ prefix: "whatamiplayin" })
+export const plugin = new Elysia({ prefix: "whatamiplayin", name: "spotify" })
     .use(
         cron({
             name: "getSpotifyStatus",

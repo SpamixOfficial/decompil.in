@@ -12,7 +12,7 @@ declare module "bun" {
     }
 }
 
-export const setupPlugin = new Elysia().get(
+export const setupPlugin = new Elysia({ name: "setup" }).get(
     "/setup",
     async ({ redirect, set, query }) => {
         // Auth and "already-setup" checking
@@ -28,7 +28,8 @@ export const setupPlugin = new Elysia().get(
 
         if (query.code === undefined) {
             return redirect(
-                `https://accounts.spotify.com/authorize?client_id=${Bun.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${Bun.env.CALLBACK}&scope=user-read-currently-playing`
+                `https://accounts.spotify.com/authorize?client_id=${Bun.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${Bun.env.CALLBACK}&scope=user-read-currently-playing`,
+                302
             );
         }
 
