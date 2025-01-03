@@ -1,77 +1,59 @@
-import { Elysia } from "elysia";
+import { Elysia, error } from "elysia";
 import bearer from "@elysiajs/bearer";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { usersTable } from "./drizzle/db/schema";
-import { and, eq, getTableColumns, ilike } from "drizzle-orm";
-import { DBStatus } from "./drizzle";
+import { sessionTable, usersTable } from "./drizzle/db/schema";
+import { and, eq, ilike } from "drizzle-orm";
+import { db, DBStatus } from "./drizzle";
 
 class Users {
     constructor(public db: MySql2Database<typeof import("./drizzle/db/schema")>) {}
 
     async validCredentials(username: string, token: string) {
-        let userInfo = await this.db
-            .select()
-            .from(usersTable)
-            .where(eq(usersTable.username, username));
-        // Abort if not 1, this means that if there is no result we just abort
-        // In case of duplicate accounts we also abort, even though that scenario techincally isnt possible!
-        // Btw this also checks username
-        if (userInfo.length !== 1) {
+        let userInfo = await this.db.query.usersTable.findFirst({
+            where: eq(usersTable.username, username),
+        });
+        // Abort if no result (username can't be valid)
+        if (userInfo === undefined) {
             return DBStatus.NotValidError;
         }
-        let tokenHash = userInfo[0].tokenHash;
         // Final check!
-        if (!(await Bun.password.verify(token, tokenHash))) {
+        if (!(await Bun.password.verify(token, userInfo.tokenHash))) {
             return DBStatus.NotValidError;
         } else {
             return DBStatus.Ok;
         }
     }
 
-    async userExists(id: number) {
-        let userInfo = await this.db
-            .select()
-            .from(usersTable)
-            .where(eq(usersTable.id, id));
+    async searchUsers(queryData: { username?: string; id?: number }) {
+        let search = await this.db.query.usersTable.findMany({
+            columns: {
+                tokenHash: false,
+            },
+            where: and(
+                queryData.username ? ilike(usersTable.username, queryData.username) : undefined,
+                queryData.id ? eq(usersTable.id, queryData.id) : undefined
+            ),
+        });
 
-        if (userInfo.length !== 1) {
-            return false;
-        }
-        return true;
-    }
-
-    async searchUsers(username?: string, id?: number) {
-        const { tokenHash, ...rest } = getTableColumns(usersTable);
-        let search = await this.db
-            .select({ ...rest })
-            .from(usersTable)
-            .where(
-                and(
-                    username ? ilike(usersTable.username, username) : undefined,
-                    id ? eq(usersTable.id, id) : undefined
-                )
-            );
         return search;
     }
 
     async getUserByID(id: number) {
-        if (!(await this.userExists(id))) {
-            return null;
+        let userInfo = await this.db.query.usersTable.findFirst({
+            columns: {
+                tokenHash: false,
+            },
+            where: eq(usersTable.id, id),
+        });
+        if (userInfo === undefined) {
+            return DBStatus.NonExistantError;
         }
-        const { tokenHash, ...rest } = getTableColumns(usersTable);
-        let search = await this.db
-            .select({ ...rest })
-            .from(usersTable)
-            .where(eq(usersTable.id, id))
-            .limit(1);
-        return search[0];
+
+        return userInfo;
     }
 
     async createUser(username: string, token: string) {
-        let userInfo = await this.db
-            .select()
-            .from(usersTable)
-            .where(eq(usersTable.username, username));
+        let userInfo = await this.db.select().from(usersTable).where(eq(usersTable.username, username));
         if (userInfo.length != 0) {
             return DBStatus.AlreadyExistsError;
         }
@@ -89,7 +71,21 @@ class Users {
     }
 
     async createUserSession(id: number) {
-        
+        const session = crypto.getRandomValues(new Uint32Array(1))[0];
+        await this.db.insert(sessionTable).values({ session, userId: id });
+        return session;
+    }
+
+    async revokeUserSession(session: number) {
+        await this.db.delete(sessionTable).where(eq(sessionTable.session, session));
+    }
+
+    async isSessionOk(session: number) {
+        return (
+            (await this.db.query.sessionTable.findFirst({
+                where: eq(sessionTable.session, session),
+            })) !== undefined
+        );
     }
 }
 
@@ -105,23 +101,19 @@ function genToken(length: number) {
     return l.substring(0, length);
 }
 
-const authentication = new Elysia({ name: "authentication" })
-    .use(bearer())
-    .macro({
-        protected() {
-            return {
-                beforeHandle({ bearer, set }) {
-                    if (!bearer || bearer !== Bun.env.BACKEND_PWD) {
-                        set.status = 401;
-                        set.headers[
-                            "WWW-Authenticate"
-                        ] = `Bearer realm='sign', error="invalid_request"`;
+const authentication = new Elysia({ name: "authentication" }).use(bearer()).decorate("db", new Users(db)).macro({
+    protected() {
+        return {
+            beforeHandle({ bearer, set }) {
+                if (!bearer || bearer !== Bun.env.BACKEND_PWD) {
+                    set.status = 401;
+                    set.headers["WWW-Authenticate"] = `Bearer realm='sign', error="invalid_request"`;
 
-                        return "Unauthorized";
-                    }
-                },
-            };
-        },
-    });
+                    return "Unauthorized";
+                }
+            },
+        };
+    }
+});
 
 export { Users, authentication };

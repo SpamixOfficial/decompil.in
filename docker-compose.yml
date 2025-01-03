@@ -21,7 +21,7 @@ services:
             - "mysql"
     mysql:
         image: mysql:latest
-        container_name: database
+        container_name: decompil.in-database
         volumes:
             - mysqldata:/var/lib/mysql
             - ./sqldump:/sqldump
