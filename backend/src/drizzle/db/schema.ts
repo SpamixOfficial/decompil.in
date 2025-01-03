@@ -7,6 +7,7 @@ import {
     mysqlSchema,
     mysqlTable
 } from "drizzle-orm/mysql-core";
+import { user } from "./auth-schema";
 
 export const challengeTable = mysqlTable("challenges", {
     id: int("id").autoincrement().primaryKey(),
@@ -44,7 +45,7 @@ export const challengeSolveTable = mysqlTable("challengeSolves", {
     id: int("id").autoincrement().primaryKey(),
     solveDate: datetime().notNull(),
     challengeId: int().notNull(),
-    userId: int().notNull(),
+    userId: varchar("id", { length: 36 }).notNull(),
 });
 
 export const challengeSolveTableRelations = relations(
@@ -54,14 +55,14 @@ export const challengeSolveTableRelations = relations(
             fields: [challengeSolveTable.challengeId],
             references: [challengeTable.id],
         }),
-        user: one(usersTable, {
+        user: one(user, {
             fields: [challengeSolveTable.userId],
-            references: [usersTable.id],
+            references: [user.id],
         }),
     })
 );
 
-export const usersTable = mysqlTable("users", {
+/*export const usersTable = mysqlTable("users", {
     id: int("id").autoincrement().primaryKey(),
     username: varchar({ length: 255 }).notNull().unique(),
     tokenHash: varchar({ length: 118 }).notNull(),
@@ -83,4 +84,4 @@ export const sessionTableRelations = relations(sessionTable, ({ one }) => ({
         fields: [sessionTable.userId],
         references: [usersTable.id],
     }),
-}));
+}));*/
