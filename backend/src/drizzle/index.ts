@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./db/schema";
+import * as auth_schema from "./db/auth-schema";
 import mysql from "mysql2/promise";
 import { defineConfig } from "drizzle-kit";
 
@@ -29,4 +30,4 @@ const pool = mysql.createPool({
     database: Bun.env.MYSQL_DATABASE,
 });
 
-export const db = drizzle({ client: pool, schema, mode: "default" });
+export const db = drizzle({ client: pool, schema: {...schema, ...auth_schema}, mode: "default" });

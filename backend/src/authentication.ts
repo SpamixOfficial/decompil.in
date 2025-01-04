@@ -1,11 +1,12 @@
 import { Elysia, error } from "elysia";
 import bearer from "@elysiajs/bearer";
-import { MySql2Database } from "drizzle-orm/mysql2";
-import { sessionTable, usersTable } from "./drizzle/db/schema";
-import { and, eq, ilike } from "drizzle-orm";
-import { db, DBStatus } from "./drizzle";
+import { auth } from "./utils/auth";
+//import { MySql2Database } from "drizzle-orm/mysql2";
+//import { sessionTable, usersTable } from "./drizzle/db/schema";
+//import { and, eq, ilike } from "drizzle-orm";
+//import { db, DBStatus } from "./drizzle";
 
-class Users {
+/*class Users {
     constructor(public db: MySql2Database<typeof import("./drizzle/db/schema")>) {}
 
     async validCredentials(username: string, token: string) {
@@ -99,9 +100,9 @@ function genToken(length: number) {
         console.log(a);
     }
     return l.substring(0, length);
-}
+}*/
 
-const authentication = new Elysia({ name: "authentication" }).use(bearer()).decorate("db", new Users(db)).macro({
+const authentication = new Elysia({ name: "authentication" }).use(bearer()).macro({
     protected() {
         return {
             beforeHandle({ bearer, set }) {
@@ -113,7 +114,18 @@ const authentication = new Elysia({ name: "authentication" }).use(bearer()).deco
                 }
             },
         };
+    },
+    signinRequired() {
+        return {
+            async beforeHandle({request, set}) {
+                const session = await auth.api.getSession({ headers: request.headers });
+                if (!session) {
+                    set.status = 401;
+                    return "Please sign in to access this route!"
+                }
+            }
+        }
     }
 });
 
-export { Users, authentication };
+export { authentication };

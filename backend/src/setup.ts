@@ -7,7 +7,7 @@ declare module "bun" {
         SPOTIFY_CLIENT_ID: string;
         SPOTIFY_CLIENT_SECRET: string;
         SPOTIFY_TOKEN: string | undefined;
-        BACKEND_PWD: string;
+        APP_BASE_URL: string;
         CALLBACK: string;
     }
 }
@@ -38,7 +38,7 @@ export const setupPlugin = new Elysia({ name: "setup" }).get(
             body: queryString.stringify({
                 grant_type: "authorization_code",
                 code: query.code,
-                redirect_uri: Bun.env.CALLBACK,
+                redirect_uri: Bun.env.APP_BASE_URL + "/setup",
             }),
             headers: {
                 "content-type": "application/x-www-form-urlencoded",
