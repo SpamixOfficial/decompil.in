@@ -76,8 +76,10 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         async ({ ctf, body }) => {
             let result = await ctf.createChallenge(body);
 
-            if (result === DBStatus.NonExistantError || result === undefined) {
-                return error(400, "Unknown error, consult the administrator");
+            if (result === DBStatus.NonExistantError) {
+                return error(404, "Something went wrong when creating the challenge");
+            } else if (result === undefined) {
+                return error(400, "Unknown error, consult the administrator")
             }
             return result;
         },
@@ -87,7 +89,8 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             response: {
                 200: "challengeObjectExternal",
                 401: t.String(),
-                400: t.String(),
+                404: t.String(),
+                400: t.String()
             },
         }
     )
@@ -96,7 +99,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         async ({ ctf , params: { id }}) => {
             let result = await ctf.getChallenge(id);
             if (result === DBStatus.NonExistantError) {
-                return error(400, "Unknown error, consult the administrator");
+                return error(404, "No such challenge");
             };
             return result;
         },
@@ -106,7 +109,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             }),
             response: {
                 200: "challengeObjectExternal",
-                400: t.String(),
+                404: t.String(),
             },
         }
     )
@@ -117,7 +120,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             let chall = await ctf.updateChallenge(id, body);
 
             if (chall === DBStatus.NonExistantError) {
-                return error(400, "Unknown error, consult the administrator");
+                return error(404, "No such challenge");
             };
 
             return chall;
@@ -131,7 +134,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             response: {
                 200: "challengeObjectExternal",
                 401: t.String(),
-                400: t.String(),
+                404: t.String(),
             },
         }
     );

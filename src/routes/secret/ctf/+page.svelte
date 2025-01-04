@@ -3,50 +3,49 @@
     import { authClient } from "$lib/auth-client";
     import { onMount } from "svelte";
     import Drawer from "./Drawer.svelte";
-
+    import { Api } from "$lib/api";
     let currentPage = $state(0);
 
-    let user;
-    let session;
+    let user = $state({});
+    let session =  $state({});
     let signedIn = $state(false);
 
-    let challs = [
+    let challs = $state([
         {
-            title: "Oh my",
-            description:
-                "A masterhacker has figured out how to access our secret page, but we haven't! Can you find it?",
+            title: "Loading challenges!",
+            description: "This card should dissapear soon",
+            score: 999,
+            files: []
         },
-    ];
+    ]);
 
     onMount(async () => {
         const sessionResponse = await authClient.getSession();
-        signedIn = sessionResponse.data !== undefined;
-        console.log(signedIn, sessionResponse.data.session !== undefined, sessionResponse.data);
-        if (signedIn) {
+        signedIn = sessionResponse.data !== undefined && sessionResponse.data !== null;
+        if (sessionResponse.data !== undefined && sessionResponse.data !== null) {
             user = sessionResponse.data.user;
             session = sessionResponse.data.session;
-        };
+        }
+
+        const challResponse = await Api.loadAllChalls();
+        if (challResponse.success) {
+            challs = challResponse.data;
+            console.log(challs);
+        } else {
+            challs = [
+                {
+                    title: "Something went wrong!",
+                    description: challResponse.error || "Woah there wasn't even an error message (that's bad)",
+                    score: 400,
+                    files: []
+                },
+            ];
+        }
     });
 </script>
-<Drawer pageControl=currentPage>
+
+<Drawer pageControl="currentPage" {signedIn}>
     {#each challs as chall}
-        <CtfCard title={chall.title} description={chall.description} />
+        <CtfCard files={chall.files} score={chall.score} title={chall.title} description={chall.description} />
     {/each}
-    <!--{#if !signedIn}
-        <button
-            class="btn btn-primary"
-            onclick={() => {
-                authClient.signIn.social({
-                    provider: "github",
-                });
-            }}>Sign in</button
-        >
-    {:else}
-        <button
-            class="btn btn-primary"
-            onclick={() => {
-                authClient.signOut();
-            }}>Sign out</button
-        >
-    {/if}-->
 </Drawer>
