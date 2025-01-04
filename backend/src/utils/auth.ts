@@ -16,4 +16,6 @@ export const auth = betterAuth({
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         },
     },
+    baseURL: process.env.APP_BASE_URL!,
+    trustedOrigins: [process.env.FRONTEND_URL!, process.env.APP_BASE_URL!]
 });

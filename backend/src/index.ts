@@ -10,14 +10,16 @@ import cors from "@elysiajs/cors";
 
 // Better auth
 const betterAuthView = (context: Context) => {
-    const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"]
-    // validate request method
-    if(BETTER_AUTH_ACCEPT_METHODS.includes(context.request.clone().method)) {
-        return auth.handler(context.request.clone());
+    const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"];
+    // @ts-ignore
+    context.request = new Request(context.request, { body: context.body }); // https://github.com/elysiajs/elysia/issues/988
+    
+    if (BETTER_AUTH_ACCEPT_METHODS.includes(context.request.method)) {
+        return auth.handler(context.request);
     } else {
-        context.error(405)
+        context.error(405);
     }
-}
+};
 
 const app = new Elysia()
     .use(
@@ -48,21 +50,26 @@ const app = new Elysia()
         })
     )
     .use(cors())
-    .use(swagger({
-        exclude: ["/setup"],
-        documentation: {
-            info: {
-                title: 'Decompil.in API',
-                version: '1.0.0'
-            }
-        }
-    }))
+    .use(
+        swagger({
+            exclude: ["/setup"],
+            documentation: {
+                info: {
+                    title: "Decompil.in API",
+                    version: "1.0.0",
+                },
+            },
+        })
+    )
     .use(setupPlugin)
     .use(playPlugin)
     .use(ctfPlugin)
-    .all("/api/auth/*", betterAuthView) // Better auth
+    .parser("custom", ({ request }) => {
+        return request.text();
+    })
+    .all("/api/auth/*", betterAuthView, {
+        parse: "custom",
+    }) // Better auth
     .listen(3000);
 
-console.log(
-    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);

@@ -3,8 +3,9 @@
     import { authClient } from "$lib/auth-client";
     import { onMount } from "svelte";
 
-    let session = null;
-    let signedIn = false;
+    let user;
+    let session;
+    let signedIn = $state(false);
 
     let challs = [
         {
@@ -14,24 +15,34 @@
         },
     ];
 
-    /*onMount(async () => {
-        session = await authClient.getSession();
-        signedIn = !session;
-    });*/
+    onMount(async () => {
+        const sessionResponse = await authClient.getSession();
+        signedIn = sessionResponse.data !== undefined;
+        console.log(signedIn, sessionResponse.data.session !== undefined, sessionResponse.data);
+        if (signedIn) {
+            user = sessionResponse.data.user;
+            session = sessionResponse.data.session;
+        };
+    });
 </script>
 
 {#each challs as chall}
     <CtfCard title={chall.title} description={chall.description} />
 {/each}
-<!--{#if !signedIn}-->
-<button
-    class="btn btn-primary"
-    onclick={() => {
-        authClient.signIn.social({
-            provider: "github",
-        });
-    }}>Sign in</button
->
-<!--{:else}-->
-<button class="btn btn-primary" onclick={authClient.signOut}>Sign out</button>
-<!--{/if}-->
+{#if !signedIn}
+    <button
+        class="btn btn-primary"
+        onclick={() => {
+            authClient.signIn.social({
+                provider: "github",
+            });
+        }}>Sign in</button
+    >
+{:else}
+    <button
+        class="btn btn-primary"
+        onclick={() => {
+            authClient.signOut();
+        }}>Sign out</button
+    >
+{/if}
