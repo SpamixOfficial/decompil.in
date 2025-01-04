@@ -13,7 +13,6 @@
         phone = window.innerWidth < 768 || window.innerHeight < 812;
     }
 </script>
-
 {#if !phone}
     <Desktop />
 {:else}

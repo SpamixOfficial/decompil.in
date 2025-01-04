@@ -2,6 +2,9 @@
     import CtfCard from "./CtfCard.svelte";
     import { authClient } from "$lib/auth-client";
     import { onMount } from "svelte";
+    import Drawer from "./Drawer.svelte";
+
+    let currentPage = $state(0);
 
     let user;
     let session;
@@ -25,24 +28,25 @@
         };
     });
 </script>
-
-{#each challs as chall}
-    <CtfCard title={chall.title} description={chall.description} />
-{/each}
-{#if !signedIn}
-    <button
-        class="btn btn-primary"
-        onclick={() => {
-            authClient.signIn.social({
-                provider: "github",
-            });
-        }}>Sign in</button
-    >
-{:else}
-    <button
-        class="btn btn-primary"
-        onclick={() => {
-            authClient.signOut();
-        }}>Sign out</button
-    >
-{/if}
+<Drawer pageControl=currentPage>
+    {#each challs as chall}
+        <CtfCard title={chall.title} description={chall.description} />
+    {/each}
+    <!--{#if !signedIn}
+        <button
+            class="btn btn-primary"
+            onclick={() => {
+                authClient.signIn.social({
+                    provider: "github",
+                });
+            }}>Sign in</button
+        >
+    {:else}
+        <button
+            class="btn btn-primary"
+            onclick={() => {
+                authClient.signOut();
+            }}>Sign out</button
+        >
+    {/if}-->
+</Drawer>

@@ -49,8 +49,8 @@
 <TerminalWindow height="{height}vh" width="{width}vw" {mobile}>
     {#each Object.entries(pages) as [id, page]}
         {#if currentPage == id}
-            <div in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
-                <SvelteMarkdown source={page.source} renderers={{ image: MarkdownImage }}/>
+            <div id="markdown-container" in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
+                <SvelteMarkdown source={page.source} renderers={{ image: MarkdownImage }} />
             </div>
         {/if}
     {/each}
@@ -60,7 +60,7 @@
                 <button
                     class={mobile == "false" ? "tabButton" : "mobileTabButton"}
                     class:last={Object.values(pages).length == id}
-                    onclick={() => currentPage = id}>{page.title}</button
+                    onclick={() => (currentPage = id)}>{page.title}</button
                 >
             {/each}
         </div>
@@ -79,7 +79,15 @@
 {/if}
 
 <style>
+    :global {
+        p, h1, h2, #markdown-container {
+            font-family: "Ubuntu Mono";
+            color: white;
+        }
+    }
+
     .tabBar {
+        font-family: "Ubuntu Mono";
         left: 0px;
         right: 0px;
         margin-top: 5px;
@@ -94,6 +102,7 @@
     }
 
     .mobileTabBar {
+        font-family: "Ubuntu Mono";
         left: 0px;
         right: 0px;
         margin-top: 5px;

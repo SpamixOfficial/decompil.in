@@ -7,17 +7,14 @@
 </div>
 
 <style lang="postcss">
-    :global(p) {
+    /*p {
         font-family: "Ubuntu Mono";
     }
-    :global(h1) {
+    h1 {
         font-family: "Ubuntu Mono";
-    }
+    }*/
 
-    :global(html, body) {
-        all: initial;
-        font-family: "Ubuntu Mono";
-        color: white;
+    :global(body, html) {
         margin: 0;
         height: 100%;
         overflow: hidden;
