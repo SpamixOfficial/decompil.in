@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia, error, t } from "elysia";
 import cron from "@elysiajs/cron";
 import queryString from "querystring";
 
@@ -26,14 +26,7 @@ class Playing {
         }[];
         last_changed: number | null;
     }) {
-        return new Playing(
-            data.is_playing,
-            data.title,
-            data.album,
-            data.image_url,
-            data.artists,
-            data.last_changed
-        );
+        return new Playing(data.is_playing, data.title, data.album, data.image_url, data.artists, data.last_changed);
     }
 }
 
@@ -52,14 +45,14 @@ async function cronJob() {
         return;
     }
     let token = await genAuthTokenSpot();
-    let rq = await fetch(
-        "https://api.spotify.com/v1/me/player/currently-playing",
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+    if (token === undefined) {
+        return;
+    }
+    let rq = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 
     if (rq.status == 204) {
         Bun.env.SPOTIFY_DATA = Playing.from({
@@ -112,11 +105,7 @@ async function refreshAuthToken() {
             "content-type": "application/x-www-form-urlencoded",
             Authorization:
                 "Basic " +
-                Buffer.from(
-                    Bun.env.SPOTIFY_CLIENT_ID +
-                        ":" +
-                        Bun.env.SPOTIFY_CLIENT_SECRET
-                ).toString("base64"),
+                Buffer.from(Bun.env.SPOTIFY_CLIENT_ID + ":" + Bun.env.SPOTIFY_CLIENT_SECRET).toString("base64"),
         },
     });
     let jsresp = await resp.json();
@@ -141,27 +130,35 @@ function getPlaying() {
 }
 
 export const plugin = new Elysia({ prefix: "whatamiplayin", name: "spotify" })
+    .onError(() => {
+        return error(503);
+    })
     .use(
         cron({
             name: "getSpotifyStatus",
             pattern: "*/2 * * * * *",
             run() {
-                cronJob();
+                try {
+                    cronJob();
+                } catch {}
             },
         })
     )
     .get("/", () => getPlaying(), {
-        response: t.Object({
-            is_playing: t.Boolean(),
-            title: t.String(),
-            album: t.String(),
-            image_url: t.String(),
-            artists: t.Array(
-                t.Object({
-                    name: t.String(),
-                    url: t.String(),
-                })
-            ),
-            last_changed: t.Nullable(t.Number()),
-        }),
+        response: {
+            200: t.Object({
+                is_playing: t.Boolean(),
+                title: t.String(),
+                album: t.String(),
+                image_url: t.String(),
+                artists: t.Array(
+                    t.Object({
+                        name: t.String(),
+                        url: t.String(),
+                    })
+                ),
+                last_changed: t.Nullable(t.Number()),
+            }),
+            503: t.String()
+        },
     });

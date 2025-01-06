@@ -2,8 +2,9 @@
     import Icon from "@iconify/svelte";
 
     let { title, description, score, files } = $props();
-    const shortenedDesc = description.length > 20 ? description.slice(0, 20 - 1) + "..." : description;
+    let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
     let open = $state(false);
+    let flagIcon = $state("material-symbols:flag-outline");
 </script>
 
 <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
@@ -40,6 +41,7 @@
         </form>
         <h3 class="text-xl font-bold">{title}</h3>
         <p class="py-4 font-medium text-pretty">{description}</p>
+        <!-- Files Dropdown -->
         {#if files.length !== 0}
             <div class="collapse collapse-arrow border-base-300 bg-base-200 border">
                 <input type="checkbox" />
@@ -47,8 +49,8 @@
                 <div class="collapse-content">
                     {#each files as file}
                         <span class="flex items-center space-x-2">
-                            <span>
-                                <Icon icon="line-md:file-document" width="24" height="24" />
+                            <span class="text-neutral">
+                                <Icon icon="material-symbols:attach-file-rounded" width="24" height="24" />
                             </span>
                             <a href={file.url}>{file.url}</a>
                         </span>
@@ -56,5 +58,13 @@
                 </div>
             </div>
         {/if}
+
+        <!-- Flag submit -->
+        <label class="input input-bordered flex items-center gap-2 mt-5">
+            <span class="text-neutral">
+                <Icon icon={flagIcon} width="24" height="24" />
+            </span>
+            <input type="text" class="grow" placeholder="SPX{'{'}.....{'}'}" />
+        </label>
     </div>
 </dialog>

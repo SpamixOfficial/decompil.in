@@ -1,6 +1,8 @@
-import { Elysia, error } from "elysia";
+import { Elysia, error, t } from "elysia";
 import bearer from "@elysiajs/bearer";
 import { auth } from "./utils/auth";
+import { Ctf } from "./ctf/client";
+import { db, DBStatus } from "./drizzle";
 //import { MySql2Database } from "drizzle-orm/mysql2";
 //import { sessionTable, usersTable } from "./drizzle/db/schema";
 //import { and, eq, ilike } from "drizzle-orm";
@@ -102,30 +104,104 @@ function genToken(length: number) {
     return l.substring(0, length);
 }*/
 
-const authentication = new Elysia({ name: "authentication" }).use(bearer()).macro({
-    protected() {
-        return {
-            beforeHandle({ bearer, set }) {
-                if (!bearer || bearer !== Bun.env.BACKEND_PWD) {
-                    set.status = 401;
-                    set.headers["WWW-Authenticate"] = `Bearer realm='sign', error="invalid_request"`;
+const authentication = new Elysia({ name: "authentication" })
+    .decorate("ctf", new Ctf(db))
+    .use(bearer())
+    .macro({
+        protected() {
+            return {
+                beforeHandle({ bearer, set }) {
+                    if (!bearer || bearer !== Bun.env.BACKEND_PWD) {
+                        set.status = 401;
+                        set.headers["WWW-Authenticate"] = `Bearer realm='sign', error="invalid_request"`;
 
-                    return "Unauthorized";
-                }
-            },
-        };
-    },
-    signinRequired() {
-        return {
-            async beforeHandle({request, set}) {
-                const session = await auth.api.getSession({ headers: request.headers });
-                if (!session) {
-                    set.status = 401;
-                    return "Please sign in to access this route!"
-                }
-            }
+                        return "Unauthorized";
+                    }
+                },
+            };
+        },
+        signinRequired() {
+            return {
+                async beforeHandle({ request, set }) {
+                    const session = await auth.api.getSession({ headers: request.headers });
+                    if (!session) {
+                        set.status = 401;
+                        return "Please sign in to access this route!";
+                    }
+                },
+            };
+        },
+        signinProtected() {
+            return {
+                async beforeHandle({ request, set, params: { id }}) {
+                    const session = await auth.api.getSession({ headers: request.headers });
+                    if (!session) {
+                        set.status = 401;
+                        return "Please sign in to access this route!";
+                    };
+
+                    if (session.user.id !== id.toString()) {
+                        set.status = 401;
+                        return "You're not allowed here :3";
+                    }
+                },
+            };
         }
-    }
-});
+    })
+    .get(
+        "/user/:id",
+        async ({ ctf, params: { id } }) => {
+            let user = await ctf.getUser(id);
+            if (user === DBStatus.NonExistantError) {
+                return error(404, "Who's there?");
+            }
+            return user;
+        },
+        {
+            params: t.Object({
+                id: t.String(),
+            }),
+            response: {
+                404: t.String(),
+                200: t.Object({
+                    id: t.String(),
+                    name: t.String(),
+                    score: t.Number(),
+                    image: t.Nullable(t.String()),
+                    githubUrl: t.Nullable(t.String()),
+                }),
+            },
+        }
+    )
+    .put(
+        "/user/:id/socials",
+        async ({ ctf, params: { id }, body }) => {
+            let user = await ctf.updateUserSocials(id, body);
+            if (user === DBStatus.NonExistantError) {
+                return error(404, "Who's there?");
+            }
+            return user;
+        },
+        {
+            params: t.Object({
+                id: t.String(),
+            }),
+            body: t.Object({
+                githubUrl: t.Optional(t.String()),
+            }),
+            response: {
+                404: t.String(),
+                200: t.Object({
+                    id: t.String(),
+                    name: t.String(),
+                    score: t.Number(),
+                    image: t.Nullable(t.String()),
+                    githubUrl: t.Nullable(t.String()),
+                }),
+                401: t.String()
+            },
+            signinProtected: true
+        }
+    );
 
 export { authentication };

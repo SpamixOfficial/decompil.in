@@ -5,7 +5,8 @@ import {
     text,
     datetime,
     mysqlSchema,
-    mysqlTable
+    mysqlTable,
+    timestamp
 } from "drizzle-orm/mysql-core";
 import { user } from "./auth-schema";
 
@@ -43,7 +44,8 @@ export const challengeFilesTableRelations = relations(
 
 export const challengeSolveTable = mysqlTable("challengeSolves", {
     id: int("id").autoincrement().primaryKey(),
-    solveDate: datetime().notNull(),
+    solveDate: timestamp().notNull().defaultNow(),
+    solveBody: text(),
     challengeId: int().notNull(),
     userId: varchar("id", { length: 36 }).notNull(),
 });

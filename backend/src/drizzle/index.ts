@@ -2,7 +2,6 @@ import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./db/schema";
 import * as auth_schema from "./db/auth-schema";
 import mysql from "mysql2/promise";
-import { defineConfig } from "drizzle-kit";
 
 // Some bun env variable declarations
 declare module "bun" {

@@ -79,7 +79,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             if (result === DBStatus.NonExistantError) {
                 return error(404, "Something went wrong when creating the challenge");
             } else if (result === undefined) {
-                return error(400, "Unknown error, consult the administrator")
+                return error(400, "Unknown error, consult the administrator");
             }
             return result;
         },
@@ -90,22 +90,22 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 200: "challengeObjectExternal",
                 401: t.String(),
                 404: t.String(),
-                400: t.String()
+                400: t.String(),
             },
         }
     )
     .get(
         "/challenge/:id",
-        async ({ ctf , params: { id }}) => {
+        async ({ ctf, params: { id } }) => {
             let result = await ctf.getChallenge(id);
             if (result === DBStatus.NonExistantError) {
                 return error(404, "No such challenge");
-            };
+            }
             return result;
         },
         {
             params: t.Object({
-                id: t.Number()
+                id: t.Number(),
             }),
             response: {
                 200: "challengeObjectExternal",
@@ -115,19 +115,19 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     )
     .put(
         "/challenges/:id",
-        async ({ ctf, body, params: { id }}) => {
+        async ({ ctf, body, params: { id } }) => {
             console.log(body);
             let chall = await ctf.updateChallenge(id, body);
 
             if (chall === DBStatus.NonExistantError) {
                 return error(404, "No such challenge");
-            };
+            }
 
             return chall;
         },
         {
             params: t.Object({
-                id: t.Number()
+                id: t.Number(),
             }),
             protected: true,
             body: "challengeObjectInternalUpdate",

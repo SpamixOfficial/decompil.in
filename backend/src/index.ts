@@ -5,6 +5,7 @@ import { setupPlugin } from "./setup";
 import { ctfPlugin } from "./ctf";
 import { helmet } from "elysia-helmet";
 import { logger, fileLogger } from "@bogeychan/elysia-logger";
+import { authentication as authPlugin } from "./authentication";
 import { auth } from "./utils/auth";
 import cors from "@elysiajs/cors";
 
@@ -64,6 +65,7 @@ const app = new Elysia()
     .use(setupPlugin)
     .use(playPlugin)
     .use(ctfPlugin)
+    .use(authPlugin)
     .parser("custom", ({ request }) => {
         return request.text();
     })
