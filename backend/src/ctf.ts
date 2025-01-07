@@ -137,4 +137,22 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 404: t.String(),
             },
         }
+    )
+    .get(
+        "/leaderboard",
+        async ({ ctf }) => {
+            let leaderboard = await ctf.leaderboard();
+            return leaderboard;
+        },
+        {
+            response: t.Array(
+                t.Object({
+                    id: t.String(),
+                    name: t.String(),
+                    score: t.Number(),
+                    image: t.Nullable(t.String()),
+                    githubUrl: t.Nullable(t.String()),
+                })
+            ),
+        }
     );

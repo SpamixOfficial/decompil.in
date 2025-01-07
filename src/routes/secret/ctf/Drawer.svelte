@@ -73,5 +73,6 @@
         </ul>
     </div>
 </div>
-
-<SettingsModal bind:open={openSettingsPage} {user} {session}/>
+{#if signedIn}
+    <SettingsModal bind:open={openSettingsPage} bind:signedIn={signedIn} {user} {session}/>
+{/if}

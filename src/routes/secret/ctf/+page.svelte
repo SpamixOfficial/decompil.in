@@ -7,15 +7,16 @@
     import TopNav from "./TopNav.svelte";
     import Loading from "./Loading.svelte";
     import { Api } from "$lib/api";
+    import Icon from "@iconify/svelte";
     let currentPage = $state(0);
     let pageLoaded = $state(false);
     let mobileVertical = $state(false);
-
     let user = $state({});
     let session = $state({});
     let signedIn = $state(false);
 
-
+    // Some prefill items which go poof when data is loaded
+    // Mainly here to not make typescript checker go mad
     let challs = $state([
         {
             title: "Loading challenges!",
@@ -25,12 +26,23 @@
         },
     ]);
 
+    let leaderboard = $state([
+        {
+            id: "superior",
+            image: "https://avatars.githubusercontent.com/u/1024025?v=4",
+            name: "The GOAT",
+            githubUrl: "https://github.com/torvalds",
+            score: 2147483647,
+        },
+    ]);
+
     onMount(async () => {
         mobileVertical = window.innerWidth < 768;
         window.addEventListener("resize", () => {
             mobileVertical = window.innerWidth < 768;
         });
         const sessionResponse = await authClient.getSession();
+        leaderboard = await Api.getLeaderboard();
         signedIn = sessionResponse.data !== undefined && sessionResponse.data !== null;
         if (sessionResponse.data !== undefined && sessionResponse.data !== null) {
             user = sessionResponse.data.user;
@@ -56,50 +68,87 @@
 
 {#if !pageLoaded}
     <Loading />
+{:else if !mobileVertical}
+    <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
+        {#if currentPage == 0}
+            <div
+                transition:fly={{ x: -200 }}
+                class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
+            >
+                {#each challs as chall}
+                    <CtfCard
+                        files={chall.files}
+                        score={chall.score}
+                        title={chall.title}
+                        description={chall.description}
+                    />
+                {/each}
+            </div>
+        {:else}
+            <div class="overflow-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-lg">Name</th>
+                            <th class="text-lg">Score</th>
+                            <th class="text-lg">Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each leaderboard.entries() as [i, user]}
+                            <tr>
+                                <th>
+                                    <div class="flex items-center gap-3">
+                                        <div class="avatar">
+                                            <div class="mask mask-squircle h-12 w-12">
+                                                <img src={user.image} alt="Avatar" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="font-bold text-lg">{user.name}</div>
+                                            <!-- svelte-ignore a11y_missing_attribute -->
+                                            {#if (user.githubUrl || "").length !== 0}
+                                                <div class="flex gap-2 text-sm opacity-50">
+                                                    <Icon icon="simple-icons:github" width="20" height="20" />
+                                                    <a class="link" href={user.githubUrl}> {user.githubUrl || ""}</a>
+                                                </div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </th>
+                                <td>
+                                    <h1 class="font-mono font-bold text-2xl">{user.score}</h1>
+                                </td>
+                                <td>
+                                    <h1 class="font-mono font-bold text-2xl">{i + 1}</h1>
+                                </td>
+                            </tr>
+                        {/each}
+                    </tbody>
+                </table>
+            </div>
+        {/if}
+    </Drawer>
 {:else}
-    {#if !mobileVertical}
-        <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
-            {#if currentPage == 0}
-                <div
-                    transition:fly={{ x: -200 }}
-                    class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
-                >
-                    {#each challs as chall}
-                        <CtfCard
-                            files={chall.files}
-                            score={chall.score}
-                            title={chall.title}
-                            description={chall.description}
-                        />
-                    {/each}
-                </div>
-            {:else}
-                <div transition:fly={{ x: 200 }}>
-                    <h1>i</h1>
-                </div>
-            {/if}
-        </Drawer>
-    {:else}
-        <TopNav bind:pageControl={currentPage} {signedIn} {user} {session}>
-            {#if currentPage == 0}
-                <div
-                    transition:fly={{ x: -200 }}
-                    class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
-                >
-                    {#each challs as chall}
-                        <CtfCard
-                            files={chall.files}
-                            score={chall.score}
-                            title={chall.title}
-                            description={chall.description}
-                        />
-                    {/each}
-                </div>
-            {:else}
-                <div transition:fly={{ x: 200 }}>
-                    <h1>i</h1>
-                </div>
-            {/if}
-        </TopNav>
-    {/if}
+    <TopNav bind:pageControl={currentPage} {signedIn} {user} {session}>
+        {#if currentPage == 0}
+            <div
+                transition:fly={{ x: -200 }}
+                class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
+            >
+                {#each challs as chall}
+                    <CtfCard
+                        files={chall.files}
+                        score={chall.score}
+                        title={chall.title}
+                        description={chall.description}
+                    />
+                {/each}
+            </div>
+        {:else}
+            <div transition:fly={{ x: 200 }}>
+                <h1>i</h1>
+            </div>
+        {/if}
+    </TopNav>
 {/if}

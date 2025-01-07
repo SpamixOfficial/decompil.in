@@ -17,5 +17,15 @@ export const auth = betterAuth({
         },
     },
     baseURL: process.env.APP_BASE_URL!,
-    trustedOrigins: [process.env.FRONTEND_URL!, process.env.APP_BASE_URL!]
+    trustedOrigins: [process.env.FRONTEND_URL!, process.env.APP_BASE_URL!],
+    user: {
+        additionalFields: {
+            score: {
+                type: "number"
+            },
+            githubUrl: {
+                type: "string"
+            }
+        }
+    }
 });

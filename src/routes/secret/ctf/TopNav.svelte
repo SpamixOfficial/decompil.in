@@ -1,8 +1,9 @@
 <script>
     let { user, signedIn, session, children, pageControl = $bindable() } = $props();
+    import SettingsModal from "./SettingsModal.svelte";
     import { authClient } from "$lib/auth-client";
     import Icon from "@iconify/svelte";
-    console.log(user);
+    let openSettingsPage = $state(false);
     let profileImg = user.image || "";
 </script>
 
@@ -58,7 +59,12 @@
     <div class="navbar-end">
         <!-- svelte-ignore a11y_consider_explicit_label -->
         {#if signedIn}
-            <img class="w-10 rounded-full" src={profileImg} />
+            <button class="btn btn-circle btn-ghost bottom-4 mt-auto active:ring active:ring-secondary">
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+                <img class="rounded-full w-10" onclick={() => {
+                    openSettingsPage = !openSettingsPage;
+                }} src={profileImg}/>
+            </button>
         {:else}
             <button
                 class="btn btn-ghost"
@@ -73,6 +79,9 @@
         {/if}
     </div>
 </div>
-<div class="justify-center w-screen h-screen flex">
+<div class="justify-center w-screen h-screen flex overflow-auto">
     {@render children()}
 </div>
+{#if signedIn}
+    <SettingsModal bind:open={openSettingsPage} bind:signedIn={signedIn} {user} {session}/>
+{/if}

@@ -202,6 +202,22 @@ const authentication = new Elysia({ name: "authentication" })
             },
             signinProtected: true
         }
-    );
+    )
+    .get("/user/:id/rank", async ({ctf, params: { id }}) => {
+        let leaderboard = await ctf.leaderboard();
+        let index = leaderboard.findIndex(x => x.id == id);
+        if (index < 0) {
+            return error(418, "You don't exist bozo");
+        };
+        return index+1
+    }, {
+        params: t.Object({
+            id: t.String()
+        }),
+        response: {
+            200: t.Integer(),
+            418: t.String()
+        }
+    });
 
 export { authentication };

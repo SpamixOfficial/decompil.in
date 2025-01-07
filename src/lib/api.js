@@ -37,6 +37,41 @@ class Api {
             data: await response.json(),
         };
     }
+
+    /**
+     * @param {string} githubUrl
+     * @param {string} id
+     * @param {any} session
+     */
+    static async updateUserSocials(githubUrl, id, session) {
+        return await fetch(`http://localhost:3000/user/${id}/socials`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                githubUrl
+            }),
+            credentials: "include",
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    static async getLeaderboard() {
+        let leaderboard = await fetch('http://localhost:3000/ctf/leaderboard');
+        return await leaderboard.json();
+    }
+
+    /**
+     * @param {any} id
+     */
+    static async getUserRank(id) {
+        let index = await fetch(`http://localhost:3000/user/${id}/leaderboard`);
+        if (index.status != 200) {
+            return -1;
+        } else {
+            return Number(await index.text())
+        }
+    }
 }
 
 export { Api };
