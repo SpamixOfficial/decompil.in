@@ -62,14 +62,26 @@ class Api {
     }
 
     /**
-     * @param {any} id
+     * @param {string} id
      */
     static async getUserRank(id) {
-        let index = await fetch(`http://localhost:3000/user/${id}/leaderboard`);
+        let index = await fetch(`http://localhost:3000/user/${id}/rank`);
         if (index.status != 200) {
             return -1;
         } else {
             return Number(await index.text())
+        }
+    }
+
+    /**
+     * @param {string} id
+     */
+    static async getUser(id) {
+        let user = await fetch(`http://localhost:3000/user/${id}`);
+        if (user.status != 200) {
+            return undefined
+        } else {
+            return await user.json();
         }
     }
 }
