@@ -3,9 +3,10 @@
     export let title = undefined;
     export let text = "";
 
+    // crack this masterhacker :3
     let cref =
         window["bota"["split"]("")["reverse"]()["join"]("")](
-            "L3NlY3JldC9jdGY="
+            "L2N0Zg=="
         );
     let craf = window["bota"["split"]("")["reverse"]()["join"]("")](
         "aHR0cHM6Ly9naWZmbGEucmUvZ2lmZmxhci5wbmc="

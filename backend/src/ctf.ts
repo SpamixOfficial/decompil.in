@@ -3,6 +3,7 @@ import { Ctf } from "./ctf/client";
 import { db, DBStatus } from "./drizzle";
 import bearer from "@elysiajs/bearer";
 import { authentication } from "./authentication";
+import { auth } from "./utils/auth";
 
 export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     .use(authentication)
@@ -16,7 +17,6 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 flag: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.String()),
-                solves: t.Array(t.Any()),
             },
             {
                 $id: "#/components/schemas/challenge.internal",
@@ -41,7 +41,6 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 description: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
-                solves: t.Array(t.Any()),
             },
             {
                 $id: "#/components/schemas/challenge.external",
@@ -114,9 +113,8 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         }
     )
     .put(
-        "/challenges/:id",
+        "/challenge/:id",
         async ({ ctf, body, params: { id } }) => {
-            console.log(body);
             let chall = await ctf.updateChallenge(id, body);
 
             if (chall === DBStatus.NonExistantError) {
@@ -136,6 +134,86 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 401: t.String(),
                 404: t.String(),
             },
+        }
+    )
+    .post(
+        "/challenge/:id/solve",
+        async ({ request, ctf, body, params: { id } }) => {
+            let chall = await ctf.getChallenge(id);
+
+            if (chall === DBStatus.NonExistantError) {
+                return error(404, "No such challenge");
+            }
+
+            if ((await ctf.checkChallFlag(id, body.flag)) !== true) {
+                return error(418, "Teapots can't solve challenges :3")
+            }
+
+            let userId = (await auth.api.getSession({ headers: request.headers }))!.user.id;
+
+            await ctf.createSolve({ challId: id, userId });
+
+            return "Success";
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            signinRequired: true,
+            body: t.Object({
+                flag: t.String(),
+            }),
+            response: {
+                200: t.String(),
+                401: t.String(),
+                418: t.String(),
+                404: t.String(),
+            },
+        }
+    )
+    .get(
+        "/challenge/:id/guides",
+        async ({ ctf, params: { id } }) => {
+            if ((await ctf.getChallenge(id)) === DBStatus.NonExistantError) {
+                return error(404, "You don't exist :3");
+            }
+            let guides = await ctf.getGuides(id);
+
+            return guides;
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            response: {
+                200: t.Array(
+                    t.Object({
+                        id: t.Number(),
+                        body: t.String(),
+                        userId: t.String(),
+                    })
+                ),
+                404: t.String(),
+            },
+        }
+    )
+    .post(
+        "/challenge/:id/guides/:challId/approve",
+        async ({ ctf, params: { id, challId } }) => {
+            if ((await ctf.getChallenge(id)) === DBStatus.NonExistantError) {
+                return error(404, "You don't exist :3");
+            }
+            await ctf.approveGuide(challId);
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+                challId: t.Number(),
+            }),
+            response: {
+                404: t.String(),
+            },
+            protected: true,
         }
     )
     .get(

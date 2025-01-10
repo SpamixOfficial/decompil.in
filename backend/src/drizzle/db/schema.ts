@@ -6,7 +6,8 @@ import {
     datetime,
     mysqlSchema,
     mysqlTable,
-    timestamp
+    timestamp,
+    boolean
 } from "drizzle-orm/mysql-core";
 import { user } from "./auth-schema";
 
@@ -22,7 +23,6 @@ export const challengeTableRelations = relations(
     challengeTable,
     ({ many }) => ({
         files: many(challengeFilesTable),
-        solves: many(challengeSolveTable),
     })
 );
 
@@ -45,9 +45,8 @@ export const challengeFilesTableRelations = relations(
 export const challengeSolveTable = mysqlTable("challengeSolves", {
     id: int("id").autoincrement().primaryKey(),
     solveDate: timestamp().notNull().defaultNow(),
-    solveBody: text(),
     challengeId: int().notNull(),
-    userId: varchar("id", { length: 36 }).notNull(),
+    userId: varchar("userId", { length: 36 }).notNull(),
 });
 
 export const challengeSolveTableRelations = relations(
@@ -63,6 +62,29 @@ export const challengeSolveTableRelations = relations(
         }),
     })
 );
+
+export const challengeGuidanceTable = mysqlTable("challengeGuides", {
+    id: int("id").autoincrement().primaryKey(),
+    challengeId: int().notNull(),
+    userId: varchar("id", { length: 36 }).notNull(),
+    body: text().notNull(),
+    approved: boolean().notNull().default(false)
+});
+
+export const challengeGuidanceTableRelations = relations(
+    challengeGuidanceTable,
+    ({ one }) => ({
+        challenge: one(challengeTable, {
+            fields: [challengeGuidanceTable.challengeId],
+            references: [challengeTable.id],
+        }),
+        user: one(user, {
+            fields: [challengeGuidanceTable.userId],
+            references: [user.id],
+        }),
+    })
+);
+
 
 /*export const usersTable = mysqlTable("users", {
     id: int("id").autoincrement().primaryKey(),

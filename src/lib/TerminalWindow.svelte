@@ -34,23 +34,6 @@
 {/if}
 
 <style>
-    p {
-        font-family: "Ubuntu Mono";
-    }
-    h1 {
-        font-family: "Ubuntu Mono";
-    }
-
-    html,
-    body {
-        all: initial;
-        font-family: "Ubuntu Mono";
-        color: white;
-        margin: 0;
-        height: 100%;
-        overflow: hidden;
-    }
-
     .terminalWindowClass {
         background-color: rgba(44, 52, 58, 0.753);
         border-radius: 15px;

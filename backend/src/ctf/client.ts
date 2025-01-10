@@ -1,6 +1,6 @@
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { challengeFilesTable, challengeSolveTable, challengeTable } from "../drizzle/db/schema";
-import { asc, eq, getTableColumns } from "drizzle-orm";
+import { challengeFilesTable, challengeGuidanceTable, challengeSolveTable, challengeTable } from "../drizzle/db/schema";
+import { asc, eq, and } from "drizzle-orm";
 import { DBStatus } from "../drizzle";
 import { user } from "../drizzle/db/auth-schema";
 import { number } from "better-auth/*";
@@ -25,7 +25,6 @@ class Ctf {
                 flag: false,
             },
             with: {
-                solves: true,
                 files: true,
             },
         });
@@ -45,7 +44,6 @@ class Ctf {
             },
             where: eq(challengeFilesTable.id, id),
             with: {
-                solves: true,
                 files: true,
             },
         });
@@ -188,8 +186,8 @@ class Ctf {
         let solveObj = await this.db.query.challengeSolveTable.findFirst({
             where: eq(challengeSolveTable.id, id),
             with: {
-                user: true
-            }
+                user: true,
+            },
         });
 
         if (solveObj === undefined) {
@@ -198,19 +196,64 @@ class Ctf {
         return solveObj;
     }
 
-    async createSolve(data: { challId: number; userId: number; body?: string }) {
+    async createSolve(data: { challId: number; userId: string }) {
         let insertData = {
             challengeId: data.challId,
-            userId: data.userId.toString(),
-            solveBody: data.body,
+            userId: data.userId,
         };
         let newSolveID = await this.db.transaction(async (tx) => {
             const [newSolve] = await tx.insert(challengeSolveTable).values(insertData).$returningId();
             return newSolve.id;
         });
+
         // return
         let newSolveObj = await this.getSolve(newSolveID);
         return newSolveObj;
+    }
+
+    async getGuides(challId: number) {
+        let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
+            where: and(eq(challengeGuidanceTable.id, challId), eq(challengeGuidanceTable.approved, true)),
+            columns: {
+                id: true,
+                body: true,
+                userId: true
+            },
+        });
+
+        return guideObjs;
+    }
+
+    async getUnapprovedGuides() {
+        let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
+            where: eq(challengeGuidanceTable.approved, false),
+            with: {
+                user: true,
+                challenge: true,
+            },
+        });
+
+        return guideObjs;
+    }
+
+    async approveGuide(guideID: number) {
+        await this.db.transaction(async (tx) => {
+            await tx
+                .update(challengeGuidanceTable)
+                .set({ approved: true })
+                .where(eq(challengeGuidanceTable.id, guideID));
+        });
+    }
+
+    async createGuide(data: { challId: number; userId: string; body: string }) {
+        let insertData = {
+            challengeId: data.challId,
+            userId: data.userId,
+            body: data.body,
+        };
+        await this.db.transaction(async (tx) => {
+            await tx.insert(challengeGuidanceTable).values(insertData);
+        });
     }
 }
 
