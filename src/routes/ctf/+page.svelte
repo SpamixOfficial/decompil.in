@@ -1,6 +1,4 @@
 <script>
-    import CtfCard from "./CtfCard.svelte";
-    import { fly } from "svelte/transition";
     import { authClient } from "$lib/auth-client";
     import { onMount } from "svelte";
     import Drawer from "./Drawer.svelte";

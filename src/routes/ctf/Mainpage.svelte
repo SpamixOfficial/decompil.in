@@ -13,7 +13,7 @@
         class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
     >
         {#each challs as chall}
-            <CtfCard id={chall.id} files={chall.files} score={chall.score} title={chall.title} description={chall.description} />
+            <CtfCard id={chall.id} files={chall.files} score={chall.score} title={chall.title} description={chall.description} solved={chall.solved} />
         {/each}
     </div>
 {:else}

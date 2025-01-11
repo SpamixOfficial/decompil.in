@@ -34,6 +34,18 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 $id: "#/components/schemas/challenge-update.internal",
             }
         ),
+        challengeObject: t.Object(
+            {
+                id: t.Integer(),
+                title: t.String(),
+                description: t.String(),
+                score: t.Integer(),
+                files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
+            },
+            {
+                $id: "#/components/schemas/challenge",
+            }
+        ),
         challengeObjectExternal: t.Object(
             {
                 id: t.Integer(),
@@ -41,6 +53,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 description: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
+                solved: t.Boolean()
             },
             {
                 $id: "#/components/schemas/challenge.external",
@@ -62,8 +75,14 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     })
     .get(
         "/challenges",
-        async ({ ctf }) => {
-            let result = await ctf.getChallenges();
+        async ({ ctf, request }) => {
+            const session = await auth.api.getSession({ headers: request.headers })
+            let userId = undefined;
+            if (session) {
+                userId = session.user.id;
+            };
+
+            let result = await ctf.getChallenges(userId);
             return result;
         },
         {
@@ -86,7 +105,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             protected: true,
             body: "challengeObjectInternal",
             response: {
-                200: "challengeObjectExternal",
+                200: "challengeObject",
                 401: t.String(),
                 404: t.String(),
                 400: t.String(),
@@ -107,7 +126,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 id: t.Number(),
             }),
             response: {
-                200: "challengeObjectExternal",
+                200: "challengeObject",
                 404: t.String(),
             },
         }
@@ -130,7 +149,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             protected: true,
             body: "challengeObjectInternalUpdate",
             response: {
-                200: "challengeObjectExternal",
+                200: "challengeObject",
                 401: t.String(),
                 404: t.String(),
             },
@@ -152,6 +171,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             let userId = (await auth.api.getSession({ headers: request.headers }))!.user.id;
 
             await ctf.createSolve({ challId: id, userId });
+            await ctf.awardPoints(userId, chall.score);
 
             return "Success";
         },
@@ -218,17 +238,17 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         }
     )
     .post(
-        "/challenge/:id/guides/:challId/approve",
-        async ({ ctf, params: { id, challId } }) => {
+        "/challenge/:id/guides/:guideId/approve",
+        async ({ ctf, params: { id, guideId } }) => {
             if ((await ctf.getChallenge(id)) === DBStatus.NonExistantError) {
                 return error(404, "You don't exist :3");
             }
-            await ctf.approveGuide(challId);
+            await ctf.approveGuide(guideId);
         },
         {
             params: t.Object({
                 id: t.Number(),
-                challId: t.Number(),
+                guideId: t.Number(),
             }),
             response: {
                 404: t.String(),

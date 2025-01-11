@@ -8,13 +8,14 @@ import { logger, fileLogger } from "@bogeychan/elysia-logger";
 import { userPlugin } from "./user";
 import { auth } from "./utils/auth";
 import cors from "@elysiajs/cors";
+import { authentication } from "./authentication";
 
 // Better auth
 const betterAuthView = (context: Context) => {
     const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"];
     // @ts-ignore
     context.request = new Request(context.request, { body: context.body }); // https://github.com/elysiajs/elysia/issues/988
-    
+
     if (BETTER_AUTH_ACCEPT_METHODS.includes(context.request.method)) {
         return auth.handler(context.request);
     } else {
@@ -23,6 +24,7 @@ const betterAuthView = (context: Context) => {
 };
 
 const app = new Elysia()
+    .use(authentication)
     .use(
         logger({
             transport: {
@@ -53,7 +55,7 @@ const app = new Elysia()
     .use(cors())
     .use(
         swagger({
-            exclude: ["/setup", RegExp("approve")],
+            exclude: ["/setup", RegExp("approve"), "authenticated"],
             documentation: {
                 info: {
                     title: "Decompil.in API",
@@ -72,6 +74,15 @@ const app = new Elysia()
     .all("/api/auth/*", betterAuthView, {
         parse: "custom",
     }) // Better auth
+    .get(
+        "/authenticated",
+        ({}) => {
+            return "Ok";
+        },
+        {
+            protected: true,
+        }
+    )
     .listen(3000);
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);

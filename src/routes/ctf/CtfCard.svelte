@@ -3,10 +3,13 @@
     import { fade } from "svelte/transition";
     import { Api } from "$lib/api";
 
-    let { id, title, description, score, files } = $props();
+    let { id, title, description, score, files, solved } = $props();
     let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
     let open = $state(false);
     let flagIcon = $state("material-symbols:flag-outline");
+    if (solved) {
+        flagIcon = "material-symbols:flag-check-outline";
+    }
     let flagVal = $state("");
     let wrongFlag = $state(false);
     let rightFlag = $state(false);
@@ -17,6 +20,7 @@
         <h2 class="card-title font-mono font-black">{title}</h2>
         <div
             class="h-10 top-4 right-4 absolute p-4 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-center"
+            class:bg-success={solved}
         >
             <p class="font-mono text-xl">{score}</p>
         </div>
@@ -33,7 +37,6 @@
         </div>
     </div>
 </div>
-
 <dialog class="modal font-mono" class:modal-open={open}>
     <div class="modal-box font-mono">
         <form method="dialog">
@@ -70,10 +73,17 @@
                 <span class="text-neutral">
                     <Icon icon={flagIcon} width="24" height="24" />
                 </span>
-                <input bind:value={flagVal} type="text" class="grow" placeholder="SPX{'{'}.....{'}'}" />
+                <input
+                    bind:value={flagVal}
+                    type="text"
+                    class="grow"
+                    placeholder={solved ? "Already solved!" : "SPX{.....}"}
+                    disabled={solved}
+                />
             </label>
             <button
                 class="btn btn-primary mt-5"
+                class:btn-disabled={solved}
                 onclick={async () => {
                     let response = await Api.solve(id, flagVal);
                     if (!response) {
@@ -103,7 +113,7 @@
     {#if rightFlag}
         <div class="toast" transition:fade>
             <div class="alert alert-success">
-                <span>Success!</span>
+                <span>Success! Reload the page to reflect any changes</span>
             </div>
         </div>
     {/if}

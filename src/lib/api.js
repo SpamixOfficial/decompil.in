@@ -5,7 +5,9 @@ class Api {
      * Get all challenges
      */
     static async loadAllChalls() {
-        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenges`);
+        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenges`, {
+            credentials: "include",
+        });
         if (response.status != 200) {
             return {
                 success: false,
@@ -24,7 +26,9 @@ class Api {
      * @param {number} id
      */
     static async getChallenge(id) {
-        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenge/${id}`);
+        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenge/${id}`, {
+            credentials: "include",
+        });
         if (response.status != 200) {
             return {
                 success: false,
@@ -102,9 +106,9 @@ class Api {
         });
 
         if (resp.status !== 200) {
-            return false
+            return false;
         } else {
-            return true
+            return true;
         }
     }
 }

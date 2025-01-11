@@ -18,9 +18,9 @@ class Ctf {
     constructor(
         public db: MySql2Database<typeof import("../drizzle/db/schema") & typeof import("../drizzle/db/auth-schema")>
     ) {}
-    async getChallenges() {
+    async getChallenges(userid?: string) {
         // Get all challenge items but remove flag, cause returning the flag would kind of ruin the challenge am I right? :D
-        const challenges = await this.db.query.challengeTable.findMany({
+        let challenges = await this.db.query.challengeTable.findMany({
             columns: {
                 flag: false,
             },
@@ -28,7 +28,13 @@ class Ctf {
                 files: true,
             },
         });
-        return challenges;
+
+        if (userid !== undefined) {
+            const userSolves = (await this.getUserSolves(userid)).map((x) => x.challengeId);
+            return challenges.map((x) => ({ ...x, solved: userSolves.includes(x.id) }));
+        } else {
+            return challenges.map((x) => ({ ...x, solved: false }));
+        }
     }
 
     /**
@@ -196,6 +202,14 @@ class Ctf {
         return solveObj;
     }
 
+    async getUserSolves(userId: string) {
+        let solveObjs = await this.db.query.challengeSolveTable.findMany({
+            where: eq(challengeSolveTable.userId, userId),
+        });
+
+        return solveObjs;
+    }
+
     async createSolve(data: { challId: number; userId: string }) {
         let insertData = {
             challengeId: data.challId,
@@ -211,13 +225,19 @@ class Ctf {
         return newSolveObj;
     }
 
+    async awardPoints(userId: string, points: number) {
+        await this.db.transaction(async (tx) => {
+            await tx.update(user).set({score: points}).where(eq(user.id, userId));
+        });
+    }
+
     async getGuides(challId: number) {
         let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
             where: and(eq(challengeGuidanceTable.id, challId), eq(challengeGuidanceTable.approved, true)),
             columns: {
                 id: true,
                 body: true,
-                userId: true
+                userId: true,
             },
         });
 

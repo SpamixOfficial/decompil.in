@@ -41,7 +41,7 @@ const authentication = new Elysia({ name: "authentication" })
                         return "Please sign in to access this route!";
                     };
 
-                    if (session.user.id !== id.toString()) {
+                    if (session.user.id !== id) {
                         set.status = 401;
                         return "You're not allowed here :3";
                     }
