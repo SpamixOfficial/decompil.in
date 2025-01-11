@@ -1,0 +1,12 @@
+[package]
+name = "dcli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { version = "1.0.95", features = ["backtrace"] }
+inquire = "0.7.5"
+reqwest = { version = "0.12.12", features = ["json"] }
+serde = { version = "1.0.217", features = ["derive"] }
+strum = { version = "0.26.3", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }

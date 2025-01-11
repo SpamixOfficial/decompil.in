@@ -197,6 +197,26 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             },
         }
     )
+    .get(
+        "/guides/unapproved",
+        async ({ ctf }) => {
+            let guides = await ctf.getUnapprovedGuides();
+            return guides;
+        },
+        {
+            response: {
+                200: t.Array(
+                    t.Object({
+                        id: t.Number(),
+                        body: t.String(),
+                        userId: t.String(),
+                    })
+                ),
+                401: t.String()
+            },
+            protected: true
+        }
+    )
     .post(
         "/challenge/:id/guides/:challId/approve",
         async ({ ctf, params: { id, challId } }) => {

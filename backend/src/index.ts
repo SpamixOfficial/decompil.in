@@ -53,7 +53,7 @@ const app = new Elysia()
     .use(cors())
     .use(
         swagger({
-            exclude: ["/setup"],
+            exclude: ["/setup", RegExp("approve")],
             documentation: {
                 info: {
                     title: "Decompil.in API",
