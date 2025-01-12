@@ -53,7 +53,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 description: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
-                solved: t.Boolean()
+                solved: t.Boolean(),
             },
             {
                 $id: "#/components/schemas/challenge.external",
@@ -76,11 +76,11 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     .get(
         "/challenges",
         async ({ ctf, request }) => {
-            const session = await auth.api.getSession({ headers: request.headers })
+            const session = await auth.api.getSession({ headers: request.headers });
             let userId = undefined;
             if (session) {
                 userId = session.user.id;
-            };
+            }
 
             let result = await ctf.getChallenges(userId);
             return result;
@@ -165,7 +165,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
             }
 
             if ((await ctf.checkChallFlag(id, body.flag)) !== true) {
-                return error(418, "Teapots can't solve challenges :3")
+                return error(418, "Teapots can't solve challenges :3");
             }
 
             let userId = (await auth.api.getSession({ headers: request.headers }))!.user.id;
@@ -232,9 +232,60 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                         userId: t.String(),
                     })
                 ),
-                401: t.String()
+                401: t.String(),
             },
-            protected: true
+            protected: true,
+        }
+    )
+    .get(
+        "/guides/:id",
+        async ({ ctf, params: { id } }) => {
+            let guide = await ctf.getGuide(id);
+            if (guide === DBStatus.NonExistantError) {
+                return error(404, "No such guide :(");
+            }
+            return guide;
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            response: {
+                200: t.Object({
+                    id: t.Number(),
+                    body: t.String(),
+                    userId: t.String(),
+                }),
+                404: t.String(),
+                401: t.String(),
+            },
+        }
+    )
+    .post(
+        "/challenge/:id/guides",
+        async ({ ctf, request, body, params: { id } }) => {
+            const session = await auth.api.getSession({ headers: request.headers });
+            
+            let challenge = await ctf.getChallenge(id);
+            if (challenge === DBStatus.NonExistantError) {
+                return error(404, "No such challenge :(");
+            };
+            
+            let userId = session?.user.id!;
+            await ctf.createGuide({ challId: id, userId, body: body.body });
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            body: t.Object({
+                body: t.String()
+            }),
+            response: {
+                404: t.String(),
+                401: t.String(),
+            },
+            signinRequired: true
         }
     )
     .post(

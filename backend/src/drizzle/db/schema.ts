@@ -68,6 +68,7 @@ export const challengeGuidanceTable = mysqlTable("challengeGuides", {
     challengeId: int().notNull(),
     userId: varchar("id", { length: 36 }).notNull(),
     body: text().notNull(),
+    createdAt: timestamp().notNull().defaultNow(),
     approved: boolean().notNull().default(false)
 });
 

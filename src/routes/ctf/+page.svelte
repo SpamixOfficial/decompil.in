@@ -6,6 +6,9 @@
     import Loading from "./Loading.svelte";
     import { Api } from "$lib/api";
     import Mainpage from "./Mainpage.svelte";
+
+    let { data } = $props();
+    
     let currentPage = $state(0);
     let pageLoaded = $state(false);
     let mobileVertical = $state(false);
@@ -35,6 +38,7 @@
     ]);
 
     onMount(async () => {
+        currentPage = data.page;
         mobileVertical = window.innerWidth < 768;
         window.addEventListener("resize", () => {
             mobileVertical = window.innerWidth < 768;
@@ -68,10 +72,10 @@
     <Loading />
 {:else if !mobileVertical}
     <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {currentPage} {challs}/>
+        <Mainpage {leaderboard} {currentPage} {challs} guideId={data.guideId}/>
     </Drawer>
 {:else}
     <TopNav bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {currentPage} {challs}/>
+        <Mainpage {leaderboard} {currentPage} {challs} guideId={data.guideId}/>
     </TopNav>
 {/if}

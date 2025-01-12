@@ -40,6 +40,13 @@
                         }}>Leaderboard</a
                     >
                 </li>
+                <li>
+                    <a
+                        onclick={() => {
+                            pageControl = 2;
+                        }}>Guides</a
+                    >
+                </li>
                 {#if signedIn}
                     <li>
                         <a

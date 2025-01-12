@@ -233,11 +233,12 @@ class Ctf {
 
     async getGuides(challId: number) {
         let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
-            where: and(eq(challengeGuidanceTable.id, challId), eq(challengeGuidanceTable.approved, true)),
+            where: and(eq(challengeGuidanceTable.challengeId, challId), eq(challengeGuidanceTable.approved, true)),
             columns: {
                 id: true,
                 body: true,
                 userId: true,
+                createdAt: true
             },
         });
 
@@ -254,6 +255,20 @@ class Ctf {
         });
 
         return guideObjs;
+    }
+
+    async getGuide(guideId: number) {
+        let guideObj = await this.db.query.challengeGuidanceTable.findFirst({
+            where: and(eq(challengeGuidanceTable.id, guideId), eq(challengeGuidanceTable.approved, true)),
+            columns: {
+                id: true,
+                body: true,
+                userId: true,
+                createdAt: true
+            },
+        }) || DBStatus.NonExistantError;
+        
+        return guideObj;
     }
 
     async approveGuide(guideID: number) {

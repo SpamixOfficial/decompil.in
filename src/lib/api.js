@@ -22,6 +22,44 @@ class Api {
     }
 
     /**
+     * Get guides
+     * @param {number} id
+     */
+    static async loadAllChallGuides(id) {
+        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenges/${id}/guides`);
+        if (response.status != 200) {
+            return {
+                success: false,
+                error: await response.text(),
+            };
+        }
+
+        return {
+            success: true,
+            data: await response.json(),
+        };
+    }
+
+    /**
+     * Get guide
+     * @param {number} id
+     */
+    static async getGuide(id) {
+        let response = await fetch(`${PUBLIC_API_URL}/ctf/guides/${id}`);
+        if (response.status != 200) {
+            return {
+                success: false,
+                error: await response.text(),
+            };
+        }
+
+        return {
+            success: true,
+            data: await response.json(),
+        };
+    }
+
+    /**
      * Get specific challenge
      * @param {number} id
      */
