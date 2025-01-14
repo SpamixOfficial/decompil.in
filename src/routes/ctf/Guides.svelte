@@ -3,11 +3,13 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import Icon from "@iconify/svelte";
+    import GuideEditor from "./GuideEditor.svelte";
 
-    let { challs, guideId } = $props();
+    let { challs, guideId, user, signedIn } = $props();
 
     let isGuideOnDisplay = $state(false);
-    let isGuideTable = $state(true);
+    let isGuideTable = $state(false);
+    let editorOpen = $state(false);
     let chosenChallenge = $state(0);
     let chosenChallengeTitle = $state("Initial challenge");
     let guides = $state([
@@ -70,24 +72,48 @@
     {:else}
         <!--TODO: Add guide submission-->
         <div class="flex h-12 p-5 mt-2 justify-between items-center">
-            <p class="text-2xl font-bold">{chosenChallengeTitle}</p>
-            <button class="btn btn-primary tooltip tooltip-left" data-tip="Click on me to create a new guide!"
-                ><Icon icon="mdi:text-box-edit-outline" width="24" height="24" /></button
-            >
+            <p class="text-2xl font-bold">"{chosenChallengeTitle}" - Guides</p>
+            <div class="flex justify-end gap-2">
+                <button
+                    class="btn btn-primary tooltip tooltip-left"
+                    data-tip="Click on me to create a new guide!"
+                    onclick={() => {
+                        editorOpen = true;
+                    }}><Icon icon="mdi:text-box-edit-outline" width="24" height="24" /></button
+                >
+                <button
+                    class="btn btn-primary"
+                    onclick={() => {
+                        isGuideTable = false;
+                    }}><Icon icon="mdi:close" width="24" height="24" /></button
+                >
+            </div>
         </div>
         <div class="divider mt-0"></div>
-        {#each guides as guide}
-            <div class="card bg-base-100 w-96 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title">Hehe</h2>
-                    <p>{guide.createdAt}</p>
-                    <div class="card-actions justify-end">
-                        <button class="btn btn-primary">Buy Now</button>
+        <div
+            class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
+        >
+            {#each guides as guide}
+                <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
+                    <div class="card-body">
+                        <h2 class="card-title">SpamixOfficial</h2>
+                        <p>{guide.body}</p>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-primary">Open guide</button>
+                        </div>
+                        <!-- svelte-ignore a11y_consider_explicit_label -->
+                        <button
+                            class="bottom-3 left-3 absolute btn btn-circle btn-ghost mt-auto hover:ring hover:ring-secondary shadow-md"
+                        >
+                            <img class="rounded-full w-10" src="https://avatars.githubusercontent.com/u/99183771?v=4" />
+                        </button>
                     </div>
                 </div>
-            </div>
-        {/each}
+            {/each}
+        </div>
     {/if}
 {:else}
     <h1>todo</h1>
 {/if}
+
+<GuideEditor bind:open={editorOpen} {signedIn} challengeId={chosenChallenge} />

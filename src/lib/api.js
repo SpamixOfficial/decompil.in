@@ -26,7 +26,7 @@ class Api {
      * @param {number} id
      */
     static async loadAllChallGuides(id) {
-        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenges/${id}/guides`);
+        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenge/${id}/guides`);
         if (response.status != 200) {
             return {
                 success: false,
@@ -140,6 +140,29 @@ class Api {
             },
             body: JSON.stringify({
                 flag,
+            }),
+        });
+
+        if (resp.status !== 200) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * @param {number} id
+     * @param {string} body
+     */
+    static async createGuide(id, body) {
+        let resp = await fetch(`http://localhost:3000/ctf/challenge/${id}/guides`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                body,
             }),
         });
 

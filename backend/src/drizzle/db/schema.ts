@@ -66,7 +66,7 @@ export const challengeSolveTableRelations = relations(
 export const challengeGuidanceTable = mysqlTable("challengeGuides", {
     id: int("id").autoincrement().primaryKey(),
     challengeId: int().notNull(),
-    userId: varchar("id", { length: 36 }).notNull(),
+    userId: varchar("userId", { length: 36 }).notNull(),
     body: text().notNull(),
     createdAt: timestamp().notNull().defaultNow(),
     approved: boolean().notNull().default(false)

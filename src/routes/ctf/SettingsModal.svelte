@@ -8,9 +8,11 @@
     let githubUrl = $state("");
     let updateError = $state(false);
     let avatarUrl = user.image || "";
+    let userRank = $state(0);
 
-    onMount(() => {
+    onMount(async () => {
         githubUrl = user.githubUrl || "";
+        userRank = await Api.getUserRank(user.id);
     });
 </script>
 
@@ -52,7 +54,7 @@
                     <div
                         class="mt-3 h-5 p-3 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-center"
                     >
-                        <p class="font-mono text-lg">Leaderboard: {user.score}</p>
+                        <p class="font-mono text-lg">Rank: {userRank}</p>
                     </div>
                 </div>
             </div>

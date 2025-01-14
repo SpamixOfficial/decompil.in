@@ -238,6 +238,46 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         }
     )
     .get(
+        "/guides",
+        async ({ ctf }) => {
+            let guides = await ctf.getAllGuides();
+            return guides;
+        },
+        {
+            response: {
+                200: t.Array(
+                    t.Object({
+                        id: t.Number(),
+                        body: t.String(),
+                        userId: t.String(),
+                    })
+                ),
+                401: t.String(),
+            },
+            protected: true,
+        }
+    )
+    .get(
+        "/guides/approved",
+        async ({ ctf }) => {
+            let guides = await ctf.getAllApprovedGuides();
+            return guides;
+        },
+        {
+            response: {
+                200: t.Array(
+                    t.Object({
+                        id: t.Number(),
+                        body: t.String(),
+                        userId: t.String(),
+                    })
+                ),
+                401: t.String(),
+            },
+            protected: true,
+        }
+    )
+    .get(
         "/guides/:id",
         async ({ ctf, params: { id } }) => {
             let guide = await ctf.getGuide(id);
@@ -259,6 +299,42 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 404: t.String(),
                 401: t.String(),
             },
+        }
+    )
+    .post(
+        "/guides/:id/unapprove",
+        async ({ ctf, params: { id } }) => {
+            let guide = await ctf.getGuide(id);
+            if (guide === DBStatus.NonExistantError) {
+                return error(404, "No such guide :(");
+            }
+            await ctf.unApproveGuide(id);
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            response: {
+                404: t.String(),
+                401: t.String(),
+            },
+            protected: true
+        }
+    )
+    .delete(
+        "/guides/:id",
+        async ({ ctf, params: { id } }) => {
+            await ctf.deleteGuide(id);
+        },
+        {
+            params: t.Object({
+                id: t.Number(),
+            }),
+            response: {
+                404: t.String(),
+                401: t.String(),
+            },
+            protected: true
         }
     )
     .post(

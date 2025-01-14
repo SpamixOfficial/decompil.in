@@ -11,7 +11,6 @@ const authentication = new Elysia({ name: "authentication" })
         protected() {
             return {
                 beforeHandle({ bearer, set }) {
-                    console.log(bearer);
                     if (!bearer || bearer !== Bun.env.BACKEND_PWD) {
                         set.status = 401;
                         set.headers["WWW-Authenticate"] = `Bearer realm='sign', error="invalid_request"`;

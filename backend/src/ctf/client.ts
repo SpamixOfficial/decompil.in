@@ -236,9 +236,42 @@ class Ctf {
             where: and(eq(challengeGuidanceTable.challengeId, challId), eq(challengeGuidanceTable.approved, true)),
             columns: {
                 id: true,
+                challengeId: true,
+                approved: true,
                 body: true,
                 userId: true,
                 createdAt: true
+            },
+        });
+
+        return guideObjs;
+    }
+
+    async getAllApprovedGuides() {
+        let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
+            where: eq(challengeGuidanceTable.approved, true),
+            columns: {
+                id: true,
+                challengeId: true,
+                approved: true,
+                body: true,
+                userId: true,
+                createdAt: true
+            },
+            with: {
+                user: true,
+                challenge: true
+            }
+        });
+
+        return guideObjs;
+    }
+
+    async getAllGuides() {
+        let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
+            with: {
+                user: true,
+                challenge: true
             },
         });
 
@@ -278,6 +311,19 @@ class Ctf {
                 .set({ approved: true })
                 .where(eq(challengeGuidanceTable.id, guideID));
         });
+    }
+
+    async unApproveGuide(guideID: number) {
+        await this.db.transaction(async (tx) => {
+            await tx
+                .update(challengeGuidanceTable)
+                .set({ approved: false })
+                .where(eq(challengeGuidanceTable.id, guideID));
+        });
+    }
+
+    async deleteGuide(guideID: number) {
+        await this.db.delete(challengeGuidanceTable).where(eq(challengeGuidanceTable.id, guideID));
     }
 
     async createGuide(data: { challId: number; userId: string; body: string }) {

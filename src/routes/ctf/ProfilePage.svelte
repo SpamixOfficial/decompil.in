@@ -18,6 +18,9 @@
     let avatarUrl = $derived(user.image || "")
 
     onMount(async () => {
+        if (!id) {
+            return;
+        }
         user = (await Api.getUser(id)) || {
             name: "Lost user",
             score: 404,
@@ -57,7 +60,7 @@
                     </div>
                 </div>
                 <div class="divider divider-horizontal m-0 opacity-0"></div>
-                <div class="flex flex-col items-start md:min-w-full sm:min-w-auto">
+                <div class="flex flex-col items-start md:min-w-full sm:min-w-auto font-normal">
                     <h1 class="font-mono font-bold text-xl">{user.name}</h1>
                     <div class="divider m-0">Stats</div>
                     <div
@@ -68,19 +71,19 @@
                     <div
                         class="mt-3 h-5 p-3 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-center"
                     >
-                        <p class="font-mono text-lg">Leaderboard: {userRank}</p>
+                        <p class="font-mono text-lg">Rank: {userRank}</p>
                     </div>
                 </div>
             </div>
-            <div class="divider mb-0">Socials</div>
+            <div class="divider mb-0 font-normal">Socials</div>
             <!--Social link input fields-->
-            <ul class="min-w-full">
+            <ul class="min-w-full font-normal">
                 <li>
                     <label class="flex items-center gap-2 mt-5 mr-2">
                         <span class="text-neutral">
                             <Icon icon="simple-icons:github" width="24" height="24" />
                         </span>
-                        <p>{githubUrl}</p>
+                        <a href={githubUrl} class="link">{githubUrl}</a>
                     </label>
                 </li>
             </ul>
