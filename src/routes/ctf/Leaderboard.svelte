@@ -20,6 +20,7 @@
                 <tr>
                     <th>
                         <div class="flex items-center gap-3">
+                            <!--Profile image/button-->
                             <button
                                 class="btn btn-circle btn-ghost bottom-4 mt-auto ring-offset-2 ring-offset-slate-400 hover:ring-2 hover:ring-secondary"
                                 onclick={() => {
@@ -30,6 +31,7 @@
                                 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                                 <img class="rounded-full w-12" src={user.image} alt="avatar" />
                             </button>
+                            <!--Github text and name, github text only visible if set!-->
                             <div>
                                 <div class="font-bold text-lg">{user.name}</div>
                                 <!-- svelte-ignore a11y_missing_attribute -->

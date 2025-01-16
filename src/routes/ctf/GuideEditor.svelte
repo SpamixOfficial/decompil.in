@@ -21,17 +21,17 @@
         <div class="divider m-0"></div>
         <div class="flex flex-col gap-2 min-w-full font-normal">
             <p>
-                What is a guide? Well, in this context it is like a helpful tip for beginners, or people who have gotten
-                stuck
+                What is a guide? Well, in this context it is like a helpful tip for beginners or people who are stuck at
+                a challenge
             </p>
             <p>
-                When writing your guide try to make it as helpful as possible while still keeping the challenge fun, eg.
+                When writing your guide try to make it as helpful as possible while still preserving the challenge, eg.
                 <b>not revealing the solution</b> since a part of the fun is figuring things out yourself :-)
             </p>
 
             <p class="mt-5 mb-5 font-bold text-sm">
                 It is recommended that you edit this outside of this "editor", as this "editor" kind of sucks right now!
-                Just paste it here later
+                Just paste your text in the box when you're done :-)
             </p>
 
             <textarea
