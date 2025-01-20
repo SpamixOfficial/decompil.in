@@ -211,6 +211,10 @@ class Ctf {
     }
 
     async createSolve(data: { challId: number; userId: string }) {
+        let solved = (await this.getUserSolves(data.userId)).map((x) => x.challengeId).includes(data.challId);
+        if (solved) {
+            return DBStatus.NotValidError;
+        };
         let insertData = {
             challengeId: data.challId,
             userId: data.userId,

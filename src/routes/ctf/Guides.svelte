@@ -6,7 +6,7 @@
     import GuideEditor from "./GuideEditor.svelte";
     import ProfilePage from "./ProfilePage.svelte";
 
-    let { challs, guideId, user, signedIn } = $props();
+    let { challs, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
 
     let isGuideOnDisplay = $state(false);
     let openUserPage = $state(false);
@@ -50,7 +50,18 @@
     }
 
     onMount(async () => {
-        if (guideId !== null) {
+        if (challengeId !== null) {
+            let challengeReq = await Api.getChallenge(challengeId);
+            if (challengeReq.success) {
+                // openGuideEditor can only work if a real guide-page is opened
+                editorOpen = openGuideEditor;
+                isGuideTable = true;
+                chosenChallenge = challengeId;
+                chosenChallengeTitle = challengeReq.data.title;
+                guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
+            }
+        }
+        if (guideId !== null && challengeId !== null) { // guideId needs challengeId to display correctly
             let response = await Api.getGuide(guideId);
             if (response.success === true) {
                 chosenGuide = response.data;

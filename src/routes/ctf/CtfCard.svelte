@@ -109,6 +109,13 @@
                 }}><Icon icon="material-symbols:send-outline-rounded" width="24" height="24" /></button
             >
         </span>
+        <!-- Prompt to write guide  -->
+        {#if solved}
+            <span class="flex flex-col mt-5">
+                <p class="italic font-light text-md text-primary-content/50">Looks like you've already solved this one! Would you like to write a guide to help others?</p>
+                <button class="btn btn-primary">Open guide editor</button>
+            </span>
+        {/if}
     </div>
     {#if wrongFlag}
         <div class="toast" transition:fade>

@@ -3,7 +3,7 @@
     import CtfCard from "./CtfCard.svelte";
     import Leaderboard from "./Leaderboard.svelte";
     import Guides from "./Guides.svelte";
-    let { currentPage, challs, leaderboard, guideId, user, signedIn } = $props();
+    let { currentPage, challs, leaderboard, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
     let transitionDuration = 200;
 </script>
 
@@ -38,6 +38,6 @@
         in:fly={{ x: 200, delay: transitionDuration, duration: transitionDuration }}
         out:fly={{ x: 200, duration: transitionDuration }}
     >
-        <Guides {challs} {user} {guideId} {signedIn}/>
+        <Guides {challs} {user} {guideId} {signedIn} {openGuideEditor} {challengeId}/>
     </div>
 {/if}

@@ -18,14 +18,16 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 score: t.Integer(),
                 files: t.Array(t.String()),
                 solves: t.Integer(),
-                category: t.Nullable(t.Enum({
-                    misc: "misc",
-                    pwn: "pwn",
-                    rev: "rev",
-                    crypto: "crypto",
-                    osint: "osint",
-                    web: "web",
-                })),
+                category: t.Nullable(
+                    t.Enum({
+                        misc: "misc",
+                        pwn: "pwn",
+                        rev: "rev",
+                        crypto: "crypto",
+                        osint: "osint",
+                        web: "web",
+                    })
+                ),
             },
             {
                 $id: "#/components/schemas/challenge.internal",
@@ -39,14 +41,16 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 score: t.Optional(t.Integer()),
                 files: t.Optional(t.Array(t.String())),
                 solves: t.Integer(),
-                category: t.Nullable(t.Enum({
-                    misc: "misc",
-                    pwn: "pwn",
-                    rev: "rev",
-                    crypto: "crypto",
-                    osint: "osint",
-                    web: "web",
-                })),
+                category: t.Nullable(
+                    t.Enum({
+                        misc: "misc",
+                        pwn: "pwn",
+                        rev: "rev",
+                        crypto: "crypto",
+                        osint: "osint",
+                        web: "web",
+                    })
+                ),
             },
             {
                 $id: "#/components/schemas/challenge-update.internal",
@@ -60,14 +64,16 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
                 solves: t.Integer(),
-                category: t.Nullable(t.Enum({
-                    misc: "misc",
-                    pwn: "pwn",
-                    rev: "rev",
-                    crypto: "crypto",
-                    osint: "osint",
-                    web: "web",
-                })),
+                category: t.Nullable(
+                    t.Enum({
+                        misc: "misc",
+                        pwn: "pwn",
+                        rev: "rev",
+                        crypto: "crypto",
+                        osint: "osint",
+                        web: "web",
+                    })
+                ),
             },
             {
                 $id: "#/components/schemas/challenge",
@@ -82,14 +88,16 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
                 solved: t.Boolean(),
                 solves: t.Integer(),
-                category: t.Nullable(t.Enum({
-                    misc: "misc",
-                    pwn: "pwn",
-                    rev: "rev",
-                    crypto: "crypto",
-                    osint: "osint",
-                    web: "web",
-                })),
+                category: t.Nullable(
+                    t.Enum({
+                        misc: "misc",
+                        pwn: "pwn",
+                        rev: "rev",
+                        crypto: "crypto",
+                        osint: "osint",
+                        web: "web",
+                    })
+                ),
             },
             {
                 $id: "#/components/schemas/challenge.external",
@@ -206,7 +214,11 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
 
             let userId = (await auth.api.getSession({ headers: request.headers }))!.user.id;
 
-            await ctf.createSolve({ challId: id, userId });
+            let result = await ctf.createSolve({ challId: id, userId });
+            if (result === DBStatus.NotValidError) {
+                return error(401, "Look at this phony trying to solve challenges more than once >.<");
+            }
+
             await ctf.awardPoints(userId, chall.score);
 
             return "Success";
@@ -306,6 +318,9 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                         id: t.Number(),
                         body: t.String(),
                         userId: t.String(),
+                        createdAt: t.Date(),
+                        user: t.Any(),
+                        challenge: t.Any(),
                     })
                 ),
                 401: t.String(),
@@ -331,6 +346,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                     id: t.Number(),
                     body: t.String(),
                     userId: t.String(),
+                    createdAt: t.Date(),
                 }),
                 404: t.String(),
                 401: t.String(),

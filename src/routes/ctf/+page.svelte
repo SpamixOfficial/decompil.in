@@ -72,10 +72,10 @@
     <Loading />
 {:else if !mobileVertical}
     <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId}/>
+        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
     </Drawer>
 {:else}
     <TopNav bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId}/>
+        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
     </TopNav>
 {/if}
