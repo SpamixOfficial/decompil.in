@@ -86,7 +86,7 @@
         {/if}
     </div>
 </div>
-<div class="justify-center w-screen h-screen flex overflow-auto">
+<div class="justify-center w-screen h-screen min-h-screen flex overflow-y-auto">
     {@render children()}
 </div>
 {#if signedIn}

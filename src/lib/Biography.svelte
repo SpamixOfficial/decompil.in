@@ -9,9 +9,35 @@
     import { onMount } from "svelte";
     import MarkdownImage from "./MarkdownImage.svelte";
     let { mobile, mobileVertical, mobileFullSize } = $props();
-    let height = $state(mobile == "true" ? 95 : 70);
-    let width = $state(mobile == "true" ? 70 : 30);
-    onMount(() => {
+    let height = $derived.by(calcHeight);
+    let width = $derived.by(calcWidth);
+
+    function calcHeight() {
+        if (mobile == "true") {
+            if (mobileVertical && !mobileFullSize) {
+                return 70;
+            } else {
+                return 95;
+            }
+        } else {
+            return 70;
+        }
+    }
+
+    function calcWidth() {
+        if (mobile == "true") {
+            if (mobileVertical || (!mobileVertical && mobileFullSize)) {
+                return 100;
+            } else if (!mobileVertical && !mobileFullSize) {
+                return 70;
+            }
+            return 70;
+        } else {
+            return 30;
+        }
+    }
+
+    /*onMount(() => {
         if (mobile == "true") {
             window.addEventListener("resize", () => {
                 if (mobileVertical == true) {
@@ -30,7 +56,7 @@
                 width = mobileFullSize ? 100 : 70;
             }
         }
-    });
+    });*/
 
     let currentPage = $state(1);
     let pages = {
@@ -80,7 +106,10 @@
 
 <style>
     :global {
-        p, h1, h2, #markdown-container {
+        p,
+        h1,
+        h2,
+        #markdown-container {
             font-family: "Ubuntu Mono";
             color: white;
         }

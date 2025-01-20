@@ -1,6 +1,6 @@
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { challengeFilesTable, challengeGuidanceTable, challengeSolveTable, challengeTable } from "../drizzle/db/schema";
-import { asc, eq, and } from "drizzle-orm";
+import { asc, eq, and, sql } from "drizzle-orm";
 import { DBStatus } from "../drizzle";
 import { user } from "../drizzle/db/auth-schema";
 import { number } from "better-auth/*";
@@ -217,6 +217,13 @@ class Ctf {
         };
         let newSolveID = await this.db.transaction(async (tx) => {
             const [newSolve] = await tx.insert(challengeSolveTable).values(insertData).$returningId();
+            
+            // increment solve counter on chall
+            await tx
+                .update(challengeTable)
+                .set({ solves: sql`${challengeTable.solves} + 1` })
+                .where(eq(challengeTable.id, data.challId));
+            
             return newSolve.id;
         });
 
@@ -227,7 +234,7 @@ class Ctf {
 
     async awardPoints(userId: string, points: number) {
         await this.db.transaction(async (tx) => {
-            await tx.update(user).set({score: points}).where(eq(user.id, userId));
+            await tx.update(user).set({ score: points }).where(eq(user.id, userId));
         });
     }
 
@@ -240,7 +247,7 @@ class Ctf {
                 approved: true,
                 body: true,
                 userId: true,
-                createdAt: true
+                createdAt: true,
             },
         });
 
@@ -256,12 +263,12 @@ class Ctf {
                 approved: true,
                 body: true,
                 userId: true,
-                createdAt: true
+                createdAt: true,
             },
             with: {
                 user: true,
-                challenge: true
-            }
+                challenge: true,
+            },
         });
 
         return guideObjs;
@@ -271,7 +278,7 @@ class Ctf {
         let guideObjs = await this.db.query.challengeGuidanceTable.findMany({
             with: {
                 user: true,
-                challenge: true
+                challenge: true,
             },
         });
 
@@ -291,16 +298,17 @@ class Ctf {
     }
 
     async getGuide(guideId: number) {
-        let guideObj = await this.db.query.challengeGuidanceTable.findFirst({
-            where: and(eq(challengeGuidanceTable.id, guideId), eq(challengeGuidanceTable.approved, true)),
-            columns: {
-                id: true,
-                body: true,
-                userId: true,
-                createdAt: true
-            },
-        }) || DBStatus.NonExistantError;
-        
+        let guideObj =
+            (await this.db.query.challengeGuidanceTable.findFirst({
+                where: and(eq(challengeGuidanceTable.id, guideId), eq(challengeGuidanceTable.approved, true)),
+                columns: {
+                    id: true,
+                    body: true,
+                    userId: true,
+                    createdAt: true,
+                },
+            })) || DBStatus.NonExistantError;
+
         return guideObj;
     }
 

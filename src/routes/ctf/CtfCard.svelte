@@ -3,7 +3,7 @@
     import { fade } from "svelte/transition";
     import { Api } from "$lib/api";
 
-    let { id, title, description, score, files, solved } = $props();
+    let { id, title, description, score, files, solved, solves, category } = $props();
     let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
     let open = $state(false);
     let flagIcon = $state("material-symbols:flag-outline");
@@ -16,24 +16,32 @@
 </script>
 
 <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
-    <div class="card-body font-mono">
-        <h2 class="card-title font-mono font-black">{title}</h2>
+    <div class="w-full h-11 m-0 pt-4 p-2 flex flex-row justify-between items-center">
+        <p class="font-bold text-xl justify-self-center first-letter:capitalize">{category}</p>
         <div
-            class="h-10 top-4 right-4 absolute p-4 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-center"
+            class="h-10 p-4 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-center"
             class:bg-success={solved}
         >
-            <p class="font-mono text-xl">{score}</p>
+            <p class="font-mono text-xl font-bold">{score}</p>
         </div>
+    </div>
+    <div class="divider m-0 w-full"></div>
+    <div class="card-body font-mono">
+        <h2 class="card-title font-mono font-black">{title}</h2>
+
         <p class="font-medium text-base">
             {shortenedDesc}
         </p>
-        <div class="card-actions justify-end font-mono">
-            <button
-                class="btn btn-primary"
-                onclick={() => {
-                    open = true;
-                }}>Open challenge</button
-            >
+        <div class="flex flex-row">
+            <p class="font-mono text-sm self-end font-bold">Solves: {solves}</p>
+            <div class="card-actions justify-end font-mono">
+                <button
+                    class="btn btn-primary"
+                    onclick={() => {
+                        open = true;
+                    }}>Open challenge</button
+                >
+            </div>
         </div>
     </div>
 </div>

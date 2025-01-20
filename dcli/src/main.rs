@@ -55,6 +55,12 @@ pub struct Challenge {
 
     #[serde(rename = "score")]
     score: usize,
+
+    #[serde(rename = "solves")]
+    solves: usize,
+
+    #[serde(rename = "category")]
+    category: Option<ChallengeCategory>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -100,6 +106,21 @@ pub struct ChallengeExternal {
 
     #[serde(rename = "score")]
     score: usize,
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub enum ChallengeCategory {
+    #[serde(rename = "misc")]
+    Misc,
+    #[serde(rename = "rev")]
+    Rev,
+    #[serde(rename = "pwn")]
+    Pwn,
+    #[serde(rename = "web")]
+    Web,
+    #[serde(rename = "crypt")]
+    Crypto,
+    #[serde(rename = "osint")]
+    Osint,
 }
 
 #[derive(Debug, AsRefStr, PartialEq, EnumString)]
@@ -174,7 +195,9 @@ async fn main() -> Result<()> {
                 let guides = get_approved_guides(&client).await?;
                 let unapprove_options: Vec<usize> = guides.iter().map(|x| x.id).collect();
 
-                let ans = match MultiSelect::new("Choose guides to unapprove", unapprove_options).prompt() {
+                let ans = match MultiSelect::new("Choose guides to unapprove", unapprove_options)
+                    .prompt()
+                {
                     // most likely the user cancelled the operation
                     Err(_) => vec![],
                     Ok(x) => x,

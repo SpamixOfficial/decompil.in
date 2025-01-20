@@ -21,6 +21,8 @@
                 title={chall.title}
                 description={chall.description}
                 solved={chall.solved}
+                solves={chall.solves}
+                category={chall.category}
             />
         {/each}
     </div>

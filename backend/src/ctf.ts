@@ -17,6 +17,15 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 flag: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.String()),
+                solves: t.Integer(),
+                category: t.Nullable(t.Enum({
+                    misc: "misc",
+                    pwn: "pwn",
+                    rev: "rev",
+                    crypto: "crypto",
+                    osint: "osint",
+                    web: "web",
+                })),
             },
             {
                 $id: "#/components/schemas/challenge.internal",
@@ -29,6 +38,15 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 flag: t.Optional(t.String()),
                 score: t.Optional(t.Integer()),
                 files: t.Optional(t.Array(t.String())),
+                solves: t.Integer(),
+                category: t.Nullable(t.Enum({
+                    misc: "misc",
+                    pwn: "pwn",
+                    rev: "rev",
+                    crypto: "crypto",
+                    osint: "osint",
+                    web: "web",
+                })),
             },
             {
                 $id: "#/components/schemas/challenge-update.internal",
@@ -41,6 +59,15 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 description: t.String(),
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
+                solves: t.Integer(),
+                category: t.Nullable(t.Enum({
+                    misc: "misc",
+                    pwn: "pwn",
+                    rev: "rev",
+                    crypto: "crypto",
+                    osint: "osint",
+                    web: "web",
+                })),
             },
             {
                 $id: "#/components/schemas/challenge",
@@ -54,6 +81,15 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 score: t.Integer(),
                 files: t.Array(t.Ref("#/components/schemas/challenge-files.file")),
                 solved: t.Boolean(),
+                solves: t.Integer(),
+                category: t.Nullable(t.Enum({
+                    misc: "misc",
+                    pwn: "pwn",
+                    rev: "rev",
+                    crypto: "crypto",
+                    osint: "osint",
+                    web: "web",
+                })),
             },
             {
                 $id: "#/components/schemas/challenge.external",
@@ -318,7 +354,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 404: t.String(),
                 401: t.String(),
             },
-            protected: true
+            protected: true,
         }
     )
     .delete(
@@ -334,19 +370,19 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 404: t.String(),
                 401: t.String(),
             },
-            protected: true
+            protected: true,
         }
     )
     .post(
         "/challenge/:id/guides",
         async ({ ctf, request, body, params: { id } }) => {
             const session = await auth.api.getSession({ headers: request.headers });
-            
+
             let challenge = await ctf.getChallenge(id);
             if (challenge === DBStatus.NonExistantError) {
                 return error(404, "No such challenge :(");
-            };
-            
+            }
+
             let userId = session?.user.id!;
             await ctf.createGuide({ challId: id, userId, body: body.body });
         },
@@ -355,13 +391,13 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 id: t.Number(),
             }),
             body: t.Object({
-                body: t.String()
+                body: t.String(),
             }),
             response: {
                 404: t.String(),
                 401: t.String(),
             },
-            signinRequired: true
+            signinRequired: true,
         }
     )
     .post(

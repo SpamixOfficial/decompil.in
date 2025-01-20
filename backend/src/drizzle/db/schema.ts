@@ -3,11 +3,10 @@ import {
     int,
     varchar,
     text,
-    datetime,
-    mysqlSchema,
     mysqlTable,
     timestamp,
-    boolean
+    boolean,
+    mysqlEnum
 } from "drizzle-orm/mysql-core";
 import { user } from "./auth-schema";
 
@@ -17,6 +16,8 @@ export const challengeTable = mysqlTable("challenges", {
     description: text().notNull(),
     flag: text().notNull(),
     score: int().default(0).notNull(),
+    category: mysqlEnum(['misc', 'pwn', 'rev', 'crypto', 'osint', 'web']).default('misc'),
+    solves: int().default(0).notNull()
 });
 
 export const challengeTableRelations = relations(
