@@ -25,6 +25,7 @@ WORKDIR /app
 
 # Copy from build process
 COPY --from=builder /app/server .
+COPY --from=builder /app/.env .
 COPY --from=builder /app/node_modules node_modules/
 
 RUN chmod +x ./server
