@@ -1,25 +1,54 @@
 services:
+    nginx-proxy:
+        container_name: decompil.in-proxy
+        image: nginxproxy/nginx-proxy:latest
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            - proxy
+        depends_on:
+            - "backend"
+            - "frontend"
+        security_opt:
+            - 'label=type:docker_t'
+        environment:
+            - TRUST_DOWNSTREAM_PROXY=false
     frontend:
         container_name: decompil.in-frontend
         image: bun-sveltekit-frontend
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
         build:
             context: .
             dockerfile: FrontendDockerfile
-        ports:
-            - "127.0.0.1:5000:3000"
+        # Uncomment if you're going to
+        #ports:
+        #    - "127.0.0.1:5000:3000"
+        environment:
+            VIRTUAL_HOST: decompil.test
         depends_on:
             - "backend"
+        networks:
+            - proxy
     backend:
         container_name: decompil.in-backend
         image: bun-elysiajs-backend
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
         build:
             context: backend
             dockerfile: Dockerfile
-        ports:
-            - "127.0.0.1:3000:3000"
+        environment:
+            VIRTUAL_HOST: api.decompil.test
+        #ports:
+        #    - "127.0.0.1:3000:3000"
         depends_on:
             - "mysql"
         networks:
+            - proxy
             - backend
     mysql:
         image: mysql:latest
@@ -27,6 +56,7 @@ services:
         volumes:
             - mysqldata:/var/lib/mysql
             - ./sqldump:/sqldump
+            - /var/run/docker.sock:/var/run/docker.sock
         ports:
             - "127.0.0.1:3306:3306"
         restart: unless-stopped
@@ -41,3 +71,4 @@ volumes:
 
 networks:
     backend:
+    proxy:

@@ -24,20 +24,27 @@
                 <a
                     onclick={() => {
                         pageControl = 0;
-                    }}>Challenges</a
+                    }}>Startpage</a
                 >
             </li>
             <li class="top-0 rounded-lg m-1">
                 <a
                     onclick={() => {
                         pageControl = 1;
-                    }}>Leaderboard</a
+                    }}>Challenges</a
                 >
             </li>
             <li class="top-0 rounded-lg m-1">
                 <a
                     onclick={() => {
                         pageControl = 2;
+                    }}>Leaderboard</a
+                >
+            </li>
+            <li class="top-0 rounded-lg m-1">
+                <a
+                    onclick={() => {
+                        pageControl = 3;
                     }}>Guides</a
                 >
             </li>

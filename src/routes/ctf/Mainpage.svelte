@@ -3,11 +3,15 @@
     import CtfCard from "./CtfCard.svelte";
     import Leaderboard from "./Leaderboard.svelte";
     import Guides from "./Guides.svelte";
-    let { currentPage, challs, leaderboard, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
+    import Welcome from "./Welcome.svelte";
+    import { onMount } from "svelte";
+    let { currentPage = $bindable(), challs, leaderboard, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
+
     let transitionDuration = 200;
 </script>
-
 {#if currentPage == 0}
+    <Welcome bind:pageControl={currentPage} />
+{:else if currentPage == 1}
     <div
         in:fly={{ x: -200, delay: transitionDuration, duration: transitionDuration }}
         out:fly={{ x: -200, duration: transitionDuration }}
@@ -23,10 +27,11 @@
                 solved={chall.solved}
                 solves={chall.solves}
                 category={chall.category}
+                signedIn={signedIn}
             />
         {/each}
     </div>
-{:else if currentPage == 1}
+{:else if currentPage == 2}
     <div
         in:fly={{ x: 200, delay: transitionDuration, duration: transitionDuration }}
         out:fly={{ x: 200, duration: transitionDuration }}

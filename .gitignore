@@ -18,6 +18,9 @@ Thumbs.db
 !.db.env.example
 !.env.test
 
+# docker
+sqldump
+
 # log
 log
 

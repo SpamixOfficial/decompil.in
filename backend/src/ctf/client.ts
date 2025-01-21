@@ -210,24 +210,38 @@ class Ctf {
         return solveObjs;
     }
 
+    async hasUserSolvedChall(data: { userId: string; challId: number }) {
+        // Get all solves matching userId and the challenge and check if length isn't 0
+        let solved =
+            (
+                await this.db.query.challengeSolveTable.findMany({
+                    where: and(
+                        eq(challengeSolveTable.userId, data.userId),
+                        eq(challengeSolveTable.challengeId, data.challId)
+                    ),
+                })
+            ).length !== 0;
+        return solved;
+    }
+
     async createSolve(data: { challId: number; userId: string }) {
         let solved = (await this.getUserSolves(data.userId)).map((x) => x.challengeId).includes(data.challId);
         if (solved) {
             return DBStatus.NotValidError;
-        };
+        }
         let insertData = {
             challengeId: data.challId,
             userId: data.userId,
         };
         let newSolveID = await this.db.transaction(async (tx) => {
             const [newSolve] = await tx.insert(challengeSolveTable).values(insertData).$returningId();
-            
+
             // increment solve counter on chall
             await tx
                 .update(challengeTable)
                 .set({ solves: sql`${challengeTable.solves} + 1` })
                 .where(eq(challengeTable.id, data.challId));
-            
+
             return newSolve.id;
         });
 

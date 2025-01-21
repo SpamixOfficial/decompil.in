@@ -2,8 +2,10 @@
     import Icon from "@iconify/svelte";
     import { fade } from "svelte/transition";
     import { Api } from "$lib/api";
+    import { redirect } from "@sveltejs/kit";
+    import { goto } from "$app/navigation";
 
-    let { id, title, description, score, files, solved, solves, category } = $props();
+    let { id, title, description, score, files, signedIn, solved, solves, category } = $props();
     let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
     let open = $state(false);
     let flagIcon = $state("material-symbols:flag-outline");
@@ -85,13 +87,13 @@
                     bind:value={flagVal}
                     type="text"
                     class="grow"
-                    placeholder={solved ? "Already solved!" : "SPX{.....}"}
-                    disabled={solved}
+                    placeholder={!signedIn? "You need to login first!" : (solved ? "Already solved!" : "SPX{.....}")}
+                    disabled={solved || !signedIn}
                 />
             </label>
             <button
                 class="btn btn-primary mt-5"
-                class:btn-disabled={solved}
+                class:btn-disabled={solved || !signedIn}
                 onclick={async () => {
                     let response = await Api.solve(id, flagVal);
                     if (!response) {
@@ -112,8 +114,27 @@
         <!-- Prompt to write guide  -->
         {#if solved}
             <span class="flex flex-col mt-5">
-                <p class="italic font-light text-md text-primary-content/50">Looks like you've already solved this one! Would you like to write a guide to help others?</p>
-                <button class="btn btn-primary">Open guide editor</button>
+                <p class="italic font-light text-md text-primary-content/50">
+                    Looks like you've already solved this one! Would you like to write a guide to help others?
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick={() => {
+                        window.location.replace(`/ctf?page=3&guideEditor=true&challenge=${id}`);
+                    }}>Open guide editor</button
+                >
+            </span>
+        {:else}
+            <span class="flex flex-col mt-5">
+                <p class="italic font-light text-md text-primary-content/50">
+                    Is the challenge a hard time? Take a look at the guides for help!
+                </p>
+                <button
+                    class="btn btn-primary"
+                    onclick={() => {
+                        window.location.replace(`/ctf?page=3&challenge=${id}`);
+                    }}>Open guides</button
+                >
             </span>
         {/if}
     </div>

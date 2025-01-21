@@ -38,7 +38,7 @@
     ]);
 
     onMount(async () => {
-        currentPage = data.page;
+        currentPage = Number(data.page);
         mobileVertical = window.innerWidth < 768;
         window.addEventListener("resize", () => {
             mobileVertical = window.innerWidth < 768;
@@ -64,6 +64,13 @@
                 },
             ];
         }
+
+        // if the user is signed in we don't have to introduce them again
+        // However if a set page is passed we don't want to change it
+        if (signedIn && data.page === null) {
+            currentPage = 1;
+        }
+
         pageLoaded = true;
     });
 </script>
@@ -72,10 +79,10 @@
     <Loading />
 {:else if !mobileVertical}
     <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
+        <Mainpage {leaderboard} {user} bind:currentPage {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
     </Drawer>
 {:else}
     <TopNav bind:pageControl={currentPage} {signedIn} {user} {session}>
-        <Mainpage {leaderboard} {user} {currentPage} {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
+        <Mainpage {leaderboard} {user} bind:currentPage {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
     </TopNav>
 {/if}

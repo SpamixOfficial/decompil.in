@@ -30,20 +30,27 @@
                     <a
                         onclick={() => {
                             pageControl = 0;
-                        }}>Challenges</a
+                        }}>Startpage</a
                     >
                 </li>
                 <li>
                     <a
                         onclick={() => {
                             pageControl = 1;
-                        }}>Leaderboard</a
+                        }}>Challenges</a
                     >
                 </li>
                 <li>
                     <a
                         onclick={() => {
                             pageControl = 2;
+                        }}>Leaderboard</a
+                    >
+                </li>
+                <li>
+                    <a
+                        onclick={() => {
+                            pageControl = 3;
                         }}>Guides</a
                     >
                 </li>

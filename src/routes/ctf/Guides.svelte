@@ -13,6 +13,7 @@
     let isGuideTable = $state(false);
     let editorOpen = $state(false);
     let chosenChallenge = $state(0);
+    let chosenChallengeSolved = $state(false);
     let chosenChallengeTitle = $state("Initial challenge");
     let guides = $state([
         {
@@ -53,8 +54,9 @@
         if (challengeId !== null) {
             let challengeReq = await Api.getChallenge(challengeId);
             if (challengeReq.success) {
-                // openGuideEditor can only work if a real guide-page is opened
-                editorOpen = openGuideEditor;
+                chosenChallengeSolved = challengeReq.data.solved;
+                // openGuideEditor can only work if a real guide-page is opened and if user has solved
+                if (chosenChallengeSolved) { editorOpen = openGuideEditor };
                 isGuideTable = true;
                 chosenChallenge = challengeId;
                 chosenChallengeTitle = challengeReq.data.title;
@@ -76,7 +78,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 {#if !isGuideTable}
-    <div class="hero bg-base-200 min-h-lvh overflow-auto" transition:fade>
+    <div class="hero bg-base-100 min-h-lvh overflow-auto" transition:fade>
         <div class="hero-content text-center">
             <div class="max-w-md">
                 <h1 class="text-5xl font-bold">Welcome to the guides!</h1>
@@ -91,6 +93,7 @@
                                         isGuideTable = true;
                                         chosenChallenge = chall.id;
                                         chosenChallengeTitle = chall.title;
+                                        chosenChallengeSolved = chall.solved;
                                         guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
                                     }}>{chall.title}</a
                                 >
@@ -106,8 +109,10 @@
         <p class="text-2xl font-bold">"{chosenChallengeTitle}" - Guides</p>
         <div class="flex justify-end gap-2">
             <button
-                class="btn sm:btn-md btn-sm btn-primary tooltip tooltip-left"
-                data-tip="Click on me to create a new guide!"
+                class="btn sm:btn-md btn-sm btn-primary tooltip sm:tooltip-left tooltip-bottom"
+                data-tip={chosenChallengeSolved ? "Click on me to create a new guide!" : "Solve the challenge first"}
+                class:tooltip-open={!chosenChallengeSolved}
+                class:btn-disabled={!chosenChallengeSolved}
                 onclick={() => {
                     editorOpen = true;
                 }}><Icon icon="mdi:text-box-edit-outline" width="24" height="24" /></button

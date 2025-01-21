@@ -158,19 +158,27 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     )
     .get(
         "/challenge/:id",
-        async ({ ctf, params: { id } }) => {
+        async ({ ctf, params: { id }, request }) => {
+            const session = await auth.api.getSession({ headers: request.headers });
+            let solved = false;
             let result = await ctf.getChallenge(id);
             if (result === DBStatus.NonExistantError) {
                 return error(404, "No such challenge");
             }
-            return result;
+
+            if (session) {
+                let userId = session.user.id;
+                solved = await ctf.hasUserSolvedChall({userId, challId: id})
+            }
+
+            return {...result, solved};
         },
         {
             params: t.Object({
                 id: t.Number(),
             }),
             response: {
-                200: "challengeObject",
+                200: "challengeObjectExternal",
                 404: t.String(),
             },
         }
@@ -393,13 +401,18 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         "/challenge/:id/guides",
         async ({ ctf, request, body, params: { id } }) => {
             const session = await auth.api.getSession({ headers: request.headers });
-
+            
             let challenge = await ctf.getChallenge(id);
             if (challenge === DBStatus.NonExistantError) {
                 return error(404, "No such challenge :(");
             }
-
+            
             let userId = session?.user.id!;
+            // user shouldn't be able to write guides if they haven't solved the challenge first
+            let hasUserSolved = await ctf.hasUserSolvedChall({userId, challId: id})
+            if (!hasUserSolved) {
+                return error(401, "Nuh uh, solve this before trying to write guides");
+            }
             await ctf.createGuide({ challId: id, userId, body: body.body });
         },
         {
