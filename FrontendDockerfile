@@ -19,6 +19,7 @@ FROM oven/bun:latest AS deployer
 WORKDIR /app
 
 # Copy from build process
+COPY .env ./
 COPY --from=builder /app/build/ .
 
 # Expose the port on which the API will listen
