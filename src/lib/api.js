@@ -86,7 +86,7 @@ class Api {
      * @param {any} session
      */
     static async updateUserSocials(githubUrl, id, session) {
-        return await fetch(`http://localhost:3000/user/${id}/socials`, {
+        return await fetch(`${PUBLIC_API_URL}/user/${id}/socials`, {
             method: "PUT",
             body: JSON.stringify({
                 githubUrl,
@@ -99,7 +99,7 @@ class Api {
     }
 
     static async getLeaderboard() {
-        let leaderboard = await fetch("http://localhost:3000/ctf/leaderboard");
+        let leaderboard = await fetch(`${PUBLIC_API_URL}/ctf/leaderboard`);
         return await leaderboard.json();
     }
 
@@ -107,7 +107,7 @@ class Api {
      * @param {string} id
      */
     static async getUserRank(id) {
-        let index = await fetch(`http://localhost:3000/user/${id}/rank`);
+        let index = await fetch(`${PUBLIC_API_URL}/user/${id}/rank`);
         if (index.status != 200) {
             return -1;
         } else {
@@ -119,7 +119,7 @@ class Api {
      * @param {string} id
      */
     static async getUser(id) {
-        let user = await fetch(`http://localhost:3000/user/${id}`);
+        let user = await fetch(`${PUBLIC_API_URL}/user/${id}`);
         if (user.status != 200) {
             return undefined;
         } else {
@@ -132,7 +132,7 @@ class Api {
      * @param {string} flag
      */
     static async solve(id, flag) {
-        let resp = await fetch(`http://localhost:3000/ctf/challenge/${id}/solve`, {
+        let resp = await fetch(`${PUBLIC_API_URL}/ctf/challenge/${id}/solve`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -155,7 +155,7 @@ class Api {
      * @param {string} body
      */
     static async createGuide(id, body) {
-        let resp = await fetch(`http://localhost:3000/ctf/challenge/${id}/guides`, {
+        let resp = await fetch(`${PUBLIC_API_URL}/ctf/challenge/${id}/guides`, {
             method: "POST",
             credentials: "include",
             headers: {

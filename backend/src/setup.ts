@@ -28,7 +28,7 @@ export const setupPlugin = new Elysia({ name: "setup" }).get(
 
         if (query.code === undefined) {
             return redirect(
-                `https://accounts.spotify.com/authorize?client_id=${Bun.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${Bun.env.CALLBACK}&scope=user-read-currently-playing`,
+                `https://accounts.spotify.com/authorize?client_id=${Bun.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${Bun.env.APP_BASE_URL}&scope=user-read-currently-playing`,
                 302
             );
         }

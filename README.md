@@ -1,3 +1,21 @@
+# Decompil.in
+
+Decompil.in is my private portfolio website, also known as ***The Homepage of Spamix**! 
+
+The website features a bit about who I am, what I do, my projects and of course a cool design! 
+
+Ever felt the need to know what I am listening to right now? Well my website has got you covered with live theme updates based on the cover art of the song I am playing! 
+
+Want this data for yourself directly? Go check out the [API Documentation](https://api.decompil.in/swagger)!
+
+If you somehow get bored by all of this you can visit the inbuilt `Competitive CTF Site` and practice your badass cybersecurity skills while achieving a leaderboard rank you can flex off to all of your friends! 
+
+You can find the site by either clicking the giffel on the homepage, or by heading over to [https://decompil.in/ctf](https://decompil.in/ctf)!
+
+*PS: You log in through GitHub :D* 
+
+So, that's my homepage! Want to host it for yourself? Check the instructions down below!
+
 # Folder structure
 
 | Path      | Explanation                                                                    |
@@ -10,14 +28,14 @@ Normally you won't have to care about this if you just go with the default (dock
 
 # Setup
 
-**BunJS is required to run this!**
+At the moment the only officially supported way of hosting this website is through `docker compose`
 
-**Follow the instructions in the backend folder before following these instructions**
-
-1. Install all bun packages: `bun install`
-2. Make any changes necessary to the api URL in the default page file
-3. You're done, deploy the app and backend in dev mode using `bun dev`
-
-## Docker
-
-TODO
+1. Install `docker` and `docker compose` from their website or your package manager
+2. Fill out all env files:
+   1. Copy `.db.env.example` into `.db.env` and fill out all the values
+   2. Copy `.env.example` into `.env` and fill out all the values
+   3. Copy `backend/.env.example` into `backend/.env` and fill out all the necessary values 
+3. Set up the backend by following the instructions specified in [the backend README](blob/main/backend/README.md)
+4. Change any VIRTUAL_HOST variables to reflect your domains in `docker-compose.yml`
+5. Build all images and start the stack: `docker compose up -d --build
+6. You're done!
