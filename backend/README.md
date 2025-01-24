@@ -10,7 +10,7 @@
 3. Start the backend (`docker compose up backend`)
 4. Connect to the database using the credentials you specified earlier: `mysql -u root -h 127.0.0.1 -P 3306 -p`
    - Run this command to grant all privileges to the user, make sure to replace any placeholder values to the ones you set earlier in the env files: `GRANT ALL PRIVILEGES ON *.* TO 'USERNAME'; CREATE DATABASE database_name; exit;`
-5. Run `bun install && bun drizzle-kit push` to push the database schema
+5. Now open a shell in the backend and push the schema: `docker exec -it decompil.in-backend bash -c "bun drizzle-kit migrate"`
 6. Navigate to `http://{APP_BASE}/setup?auth=PWD_IN_ENV_FILE`
 7. After authenticating with spotify you will be redirected back. To get your token you need to add the auth query parameter to your url like this:
     

@@ -35,7 +35,7 @@ At the moment the only officially supported way of hosting this website is throu
    1. Copy `.db.env.example` into `.db.env` and fill out all the values
    2. Copy `.env.example` into `.env` and fill out all the values
    3. Copy `backend/.env.example` into `backend/.env` and fill out all the necessary values 
-3. Set up the backend by following the instructions specified in [the backend README](blob/main/backend/README.md)
+3. Set up the backend by following the instructions specified in [the backend README](backend/README.md)
 4. Change any VIRTUAL_HOST variables to reflect your domains in `docker-compose.yml`
 5. Build all images and start the stack: `docker compose up -d --build
 6. You're done!
