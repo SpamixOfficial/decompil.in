@@ -163,7 +163,6 @@
             }
         });
         verticalDisplay = window.innerWidth < 768;
-        console.log(verticalDisplay);
         if (verticalDisplay) {
             spotHeight = 27;
             spotWidth = 100;
