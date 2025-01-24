@@ -27,7 +27,7 @@ services:
         #ports:
         #    - "127.0.0.1:5000:3000"
         environment:
-            VIRTUAL_HOST: decompil.test
+            VIRTUAL_HOST: decompil.in
         depends_on:
             - "backend"
         networks:
@@ -41,7 +41,7 @@ services:
             context: backend
             dockerfile: Dockerfile
         environment:
-            VIRTUAL_HOST: api.decompil.test
+            VIRTUAL_HOST: api.decompil.in
         #ports:
         #    - "127.0.0.1:3000:3000"
         depends_on:
