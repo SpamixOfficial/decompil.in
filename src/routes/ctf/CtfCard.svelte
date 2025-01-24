@@ -15,6 +15,21 @@
     let flagVal = $state("");
     let wrongFlag = $state(false);
     let rightFlag = $state(false);
+    // cursed type declarations for compiler to not die internally
+    let mappedFiles = $derived.by(() => {
+            /** @type {{url: String | URL, name: String | URL}[]} */
+            let tempNames = [];
+            files.forEach((/** @type {{ url: string | URL; }} */ file) => {
+                let filename = new URL(file.url).pathname.split("/").pop();
+                // Any of these should be treated as a link
+                if (!filename || filename.length === 0 || !filename.includes(".")) {
+                    tempNames.push({url: file.url, name: file.url});
+                }
+                tempNames.push({url: file.url, name: filename || "bruh"});
+            });
+            return tempNames;
+        }
+    );
 </script>
 
 <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
@@ -65,12 +80,12 @@
                 <input type="checkbox" />
                 <div class="collapse-title text-base font-medium">Files, click to open</div>
                 <div class="collapse-content">
-                    {#each files as file}
+                    {#each mappedFiles as file}
                         <span class="flex items-center space-x-2">
                             <span class="text-neutral">
                                 <Icon icon="material-symbols:attach-file-rounded" width="24" height="24" />
                             </span>
-                            <a href={file.url}>{file.url}</a>
+                            <a href={file.url.toString()}>{file.name}</a>
                         </span>
                     {/each}
                 </div>
@@ -87,7 +102,7 @@
                     bind:value={flagVal}
                     type="text"
                     class="grow"
-                    placeholder={!signedIn? "You need to login first!" : (solved ? "Already solved!" : "SPX{.....}")}
+                    placeholder={!signedIn ? "You need to login first!" : solved ? "Already solved!" : "SPX{.....}"}
                     disabled={solved || !signedIn}
                 />
             </label>

@@ -33,6 +33,28 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 $id: "#/components/schemas/challenge.internal",
             }
         ),
+        challengeObjectInternalPost: t.Object(
+            {
+                title: t.String(),
+                description: t.String(),
+                flag: t.String(),
+                score: t.Integer(),
+                files: t.Array(t.String()),
+                category: t.Nullable(
+                    t.Enum({
+                        misc: "misc",
+                        pwn: "pwn",
+                        rev: "rev",
+                        crypto: "crypto",
+                        osint: "osint",
+                        web: "web",
+                    })
+                ),
+            },
+            {
+                $id: "#/components/schemas/challenge.internal",
+            }
+        ),
         challengeObjectInternalUpdate: t.Object(
             {
                 title: t.Optional(t.String()),
@@ -40,7 +62,6 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 flag: t.Optional(t.String()),
                 score: t.Optional(t.Integer()),
                 files: t.Optional(t.Array(t.String())),
-                solves: t.Integer(),
                 category: t.Nullable(
                     t.Enum({
                         misc: "misc",
@@ -147,7 +168,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
         },
         {
             protected: true,
-            body: "challengeObjectInternal",
+            body: "challengeObjectInternalPost",
             response: {
                 200: "challengeObject",
                 401: t.String(),

@@ -78,10 +78,11 @@
             <!-- svelte-ignore a11y_consider_explicit_label -->
             <div class="min-w-full flex flex-row gap-2 justify-between">
                 <button
-                    class="btn btn-warning mt-2"
+                    class="btn btn-secondary hover:btn-error text-error-content mt-2"
                     onclick={() => {
                         authClient.signOut();
                         signedIn = false;
+                        window.location.replace("/ctf")
                     }}
                 >
                     Sign out

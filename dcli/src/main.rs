@@ -1,8 +1,8 @@
-use std::process::exit;
+use std::{fs, process::exit};
 
 use anyhow::{anyhow, Result};
 use colored::Colorize;
-use inquire::{MultiSelect, Select};
+use inquire::{Confirm, MultiSelect, Select, Text};
 use reqwest::{Client, StatusCode};
 use serde::{Deserialize, Serialize};
 use std::convert::AsRef;
@@ -40,6 +40,27 @@ pub struct Guide {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct ChallengeFile {
+    #[serde(rename = "title")]
+    title: String,
+
+    #[serde(rename = "description")]
+    description: String,
+
+    #[serde(rename = "flag")]
+    flag: String,
+
+    #[serde(rename = "score")]
+    score: usize,
+
+    #[serde(rename = "category")]
+    category: Option<ChallengeCategory>,
+
+    #[serde(rename = "files")]
+    files: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Challenge {
     #[serde(rename = "id")]
     id: usize,
@@ -61,6 +82,9 @@ pub struct Challenge {
 
     #[serde(rename = "category")]
     category: Option<ChallengeCategory>,
+
+    #[serde(rename = "files")]
+    files: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -106,8 +130,14 @@ pub struct ChallengeExternal {
 
     #[serde(rename = "score")]
     score: usize,
+
+    #[serde(rename = "solves")]
+    solves: usize,
+
+    #[serde(rename = "category")]
+    category: Option<ChallengeCategory>,
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, AsRefStr)]
 pub enum ChallengeCategory {
     #[serde(rename = "misc")]
     Misc,
@@ -117,7 +147,7 @@ pub enum ChallengeCategory {
     Pwn,
     #[serde(rename = "web")]
     Web,
-    #[serde(rename = "crypt")]
+    #[serde(rename = "crypto")]
     Crypto,
     #[serde(rename = "osint")]
     Osint,
@@ -127,6 +157,8 @@ pub enum ChallengeCategory {
 enum MenuOptions {
     #[strum(serialize = "Get all challenges")]
     GetAllChallenges,
+    #[strum(serialize = "Create challenge")]
+    CreateChallenge,
     #[strum(serialize = "Get all guides")]
     GetAllGuides,
     #[strum(serialize = "Approve guides")]
@@ -160,6 +192,7 @@ async fn main() -> Result<()> {
     // Make mutable to allow sub-menus to change menu options when that is introduced!
     let options = vec![
         MenuOptions::GetAllChallenges.as_ref(),
+        MenuOptions::CreateChallenge.as_ref(),
         MenuOptions::GetAllGuides.as_ref(),
         MenuOptions::ApproveGuides.as_ref(),
         MenuOptions::UnapproveGuides.as_ref(),
@@ -184,12 +217,52 @@ async fn main() -> Result<()> {
                     approve_prompt(&client, guide).await?;
                 }
             }
+            MenuOptions::CreateChallenge => {
+                create_challenge_prompt(&client).await?;
+            }
             MenuOptions::GetAllChallenges => {
-                get_challenges(&client).await?;
+                let result = get_challenges(&client).await?;
+                if result.is_empty() {
+                    println!("No challenges present!");
+                }
+                for chall in result {
+                    println!(
+                        "--------\n{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}\n{}: {}\n--------",
+                        "ID".bold(),
+                        chall.id,
+                        "Title".bold(),
+                        chall.title,
+                        "Description".bold(),
+                        chall.description,
+                        "Score".bold(),
+                        chall.score,
+                        "Category".bold(),
+                        chall.category.unwrap_or(ChallengeCategory::Misc).as_ref(),
+                        "Solves".bold(),
+                        chall.solves
+                    );
+                }
             }
             MenuOptions::GetAllGuides => {
                 let result = get_guides(&client).await?;
-                dbg!(result);
+                if result.is_empty() {
+                    println!("No guides present!");
+                }
+                for guide in result {
+                    println!(
+                        "--------\n{}: {}\n{}: {}\n{}: {} ({})\n{}: {} ({})\n--------",
+                        "ID".bold(),
+                        guide.id,
+                        "Body".bold(),
+                        guide.body,
+                        "Challenge".bold(),
+                        guide.challenge.title,
+                        guide.challenge_id,
+                        "User".bold(),
+                        guide.user.name,
+                        guide.user_id
+                    );
+                }
             }
             MenuOptions::UnapproveGuides => {
                 let guides = get_approved_guides(&client).await?;
@@ -231,15 +304,14 @@ async fn check_auth(client: &Client) -> Result<()> {
     return Ok(());
 }
 
-async fn get_challenges(client: &Client) -> Result<()> {
+async fn get_challenges(client: &Client) -> Result<Vec<ChallengeExternal>> {
     let resp = client
         .get(format!("{HOST}/ctf/challenges"))
         .bearer_auth(TOKEN)
         .send()
         .await?;
     let challs: Vec<ChallengeExternal> = resp.json().await?;
-    dbg!(challs);
-    return Ok(());
+    return Ok(challs);
 }
 
 async fn get_unapproved_guides(client: &Client) -> Result<Vec<Guide>> {
@@ -270,6 +342,19 @@ async fn get_approved_guides(client: &Client) -> Result<Vec<Guide>> {
         .await?;
     let guides: Vec<Guide> = resp.json().await?;
     return Ok(guides);
+}
+
+async fn create_challenge(client: &Client, file: ChallengeFile) -> Result<()> {
+    let resp = client
+        .post(format!("{HOST}/ctf/challenges"))
+        .json(&file)
+        .bearer_auth(TOKEN)
+        .send()
+        .await?;
+    if resp.status() != 200 {
+        return Err(anyhow!("Something went wrong: {:?}", resp.text().await?));
+    };
+    return Ok(());
 }
 
 async fn approve_guide(client: &Client, id: usize, guide_id: usize) -> Result<()> {
@@ -316,6 +401,38 @@ async fn deny_guide(client: &Client, guide_id: usize) -> Result<()> {
             "Something went wrong????\n\n{:?}",
             resp.text().await?
         ));
+    }
+    return Ok(());
+}
+
+async fn create_challenge_prompt(client: &Client) -> Result<()> {
+    loop {
+        let file = Text::new("Chall json file path: ").prompt()?;
+        let file_slice = match fs::read(file) {
+            Ok(x) => x,
+            Err(e) => {
+                eprintln!("{}: {}", "Error".bold().yellow(), e.to_string());
+                return Err(e.into());
+            }
+        };
+        let file_as_chall: ChallengeFile = serde_json::from_slice(&file_slice)?;
+        match create_challenge(client, file_as_chall).await {
+            Err(e) => {
+                eprintln!("{}: {}", "Error".bold().yellow(), e.to_string());
+                return Err(e.into());
+            }
+            Ok(_) => {
+                println!("{}", "Success!".bold().green());
+                let choose_another_file = Confirm::new("Upload another challenge?")
+                    .with_default(false)
+                    .prompt()?;
+                if choose_another_file {
+                    continue;
+                } else {
+                    break;
+                }
+            }
+        };
     }
     return Ok(());
 }
