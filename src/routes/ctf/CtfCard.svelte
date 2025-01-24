@@ -24,12 +24,14 @@
                 // Any of these should be treated as a link
                 if (!filename || filename.length === 0 || !filename.includes(".")) {
                     tempNames.push({url: file.url, name: file.url});
+                    return;
                 }
                 tempNames.push({url: file.url, name: filename || "bruh"});
             });
             return tempNames;
         }
     );
+    console.log(mappedFiles);
 </script>
 
 <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
@@ -85,7 +87,7 @@
                             <span class="text-neutral">
                                 <Icon icon="material-symbols:attach-file-rounded" width="24" height="24" />
                             </span>
-                            <a href={file.url.toString()}>{file.name}</a>
+                            <a href={file.url.toString()} download>{file.name}</a>
                         </span>
                     {/each}
                 </div>
