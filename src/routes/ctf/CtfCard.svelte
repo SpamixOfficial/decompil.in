@@ -31,7 +31,6 @@
             return tempNames;
         }
     );
-    console.log(mappedFiles);
 </script>
 
 <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
