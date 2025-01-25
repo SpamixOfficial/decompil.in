@@ -252,7 +252,7 @@ class Ctf {
 
     async awardPoints(userId: string, points: number) {
         await this.db.transaction(async (tx) => {
-            await tx.update(user).set({ score: points }).where(eq(user.id, userId));
+            await tx.update(user).set({ score: sql`${user.score} + ${points}` }).where(eq(user.id, userId));
         });
     }
 

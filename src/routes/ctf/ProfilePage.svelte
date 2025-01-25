@@ -14,8 +14,8 @@
         githubUrl: "https://github.com/errornointernet",
     });
     let userRank = $state(0);
-    let githubUrl = $derived(user.githubUrl || "")
-    let avatarUrl = $derived(user.image || "")
+    let githubUrl = $derived(user.githubUrl || "");
+    let avatarUrl = $derived(user.image || "");
 
     onMount(async () => {
         if (!id) {
@@ -30,7 +30,6 @@
 
         userRank = await Api.getUserRank(id);
     });
-
 </script>
 
 <dialog class="modal font-mono" class:modal-open={open}>
@@ -75,18 +74,20 @@
                     </div>
                 </div>
             </div>
-            <div class="divider mb-0 font-normal">Socials</div>
-            <!--Social link input fields-->
-            <ul class="min-w-full font-normal">
-                <li>
-                    <label class="flex items-center gap-2 mt-5 mr-2">
-                        <span class="text-neutral">
-                            <Icon icon="simple-icons:github" width="24" height="24" />
-                        </span>
-                        <a href={githubUrl} class="link">{githubUrl}</a>
-                    </label>
-                </li>
-            </ul>
+            {#if githubUrl !== ""}
+                <div class="divider mb-0 font-normal">Socials</div>
+                <!--Social link input fields-->
+                <ul class="min-w-full font-normal">
+                    <li>
+                        <label class="flex items-center gap-2 mt-5 mr-2">
+                            <span class="text-neutral">
+                                <Icon icon="simple-icons:github" width="24" height="24" />
+                            </span>
+                            <a href={githubUrl} class="link">{githubUrl}</a>
+                        </label>
+                    </li>
+                </ul>
+            {/if}
         </div>
     </div>
 </dialog>
