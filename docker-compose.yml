@@ -4,6 +4,7 @@ services:
         image: nginxproxy/nginx-proxy:latest
         volumes:
             - /var/run/docker.sock:/tmp/docker.sock
+        #    - ./nginx-conf/whitelist_cloudflare.conf:/etc/nginx/conf.d/whitelist_cloudflare.conf
         ports:
             - "80:80"
             - "443:443"

@@ -39,3 +39,7 @@ At the moment the only officially supported way of hosting this website is throu
 4. Change any VIRTUAL_HOST variables to reflect your domains in `docker-compose.yml`
 5. Build all images and start the stack: `docker compose up -d --build
 6. You're done!
+
+## Additional steps
+
+If you want to block all ip:s which aren't from cloudflare, simply uncomment the line referencing `whitelist_cloudflare.conf` in `docker-compose.yml`
