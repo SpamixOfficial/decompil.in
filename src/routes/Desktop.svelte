@@ -18,13 +18,13 @@
 
     // background changing setup
     let defaultColors = [
-        color("#ee7752"),
-        color("#e73c7e"),
-        color("#23a6d5"),
-        color("#23d5ab"),
+        rgb(40, 20, 20),
+        rgb(40, 10, 10),
+        rgb(20, 0, 0),
+        rgb(15, 0, 0),
     ];
-    let defaultTerminalBorderColor = color("#23a6d5");
-    let defaultTerminalButtonHoverColor = color("#23a6d51e");
+    let defaultTerminalBorderColor = color("#b92226");
+    let defaultTerminalButtonHoverColor = color("#b922261e");
     let defaultTextColor = color("#ffffff");
     let colorMap = {
         gradientColors: defaultColors,
