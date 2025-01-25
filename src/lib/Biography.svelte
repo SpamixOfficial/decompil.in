@@ -168,6 +168,11 @@
         transition: 0.3s;
     }
 
+    .tabButton:active {
+        background-color: var(--terminalButtonHoverColor);
+        box-shadow: 0 0 5px 1px var(--terminalButtonHoverColor);
+    }
+
     .tabButton:hover {
         background-color: var(--terminalButtonHoverColor);
         box-shadow: 0 0 5px 1px var(--terminalButtonHoverColor);

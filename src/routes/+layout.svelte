@@ -17,7 +17,7 @@
     :global(body, html) {
         margin: 0;
         height: 100%;
-        overflow: hidden;
+        overflow: auto;
     }
 
     /*:global(body)::before {

@@ -1,6 +1,6 @@
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { challengeFilesTable, challengeGuidanceTable, challengeSolveTable, challengeTable } from "../drizzle/db/schema";
-import { asc, eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 import { DBStatus } from "../drizzle";
 import { user } from "../drizzle/db/auth-schema";
 import { number } from "better-auth/*";
@@ -164,7 +164,7 @@ class Ctf {
                 score: true,
                 githubUrl: true,
             },
-            orderBy: [asc(user.score)],
+            orderBy: [desc(user.score)],
         });
 
         return leaderboard;

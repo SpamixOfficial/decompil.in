@@ -6,4 +6,7 @@
 {@render children()}
 
 <style lang="postcss">
+    :global(html, body) {
+        overflow: auto;
+    }
 </style>
