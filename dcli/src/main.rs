@@ -138,7 +138,7 @@ pub struct User {
     score: usize,
 
     #[serde(rename = "githubUrl")]
-    github_url: String,
+    github_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

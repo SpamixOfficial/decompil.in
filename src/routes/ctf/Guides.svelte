@@ -69,6 +69,7 @@
                 chosenChallengeTitle = challengeReq.data.title;
                 guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
                 // load all user avatars
+                guideUserImages = [];
                 guides.forEach(async (x) => {
                     let user = await Api.getUser(x.userId);
                     guideUserImages.push(user.image);
@@ -110,6 +111,7 @@
                                         goto(`/ctf?page=3&challenge=${chosenChallenge}`);
                                         guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
                                         // load all user avatars
+                                        guideUserImages = [];
                                         guides.forEach(async (x) => {
                                             let user = await Api.getUser(x.userId);
                                             guideUserImages.push(user.image);
