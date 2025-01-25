@@ -75,7 +75,7 @@
 <TerminalWindow height="{height}vh" width="{width}vw" style="display: flex; flex-direction: column; justify-content: space-between" {mobile}>
     {#each Object.entries(pages) as [id, page]}
         {#if currentPage == Number(id)}
-            <div id="markdown-container" style="overflow: scroll" in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
+            <div id="markdown-container" style="overflow-y: scroll; overflow-x: hidden;" in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
                 <SvelteMarkdown source={page.source} renderers={{ image: MarkdownImage }} />
             </div>
         {/if}
