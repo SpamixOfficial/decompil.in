@@ -62,7 +62,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                 flag: t.Optional(t.String()),
                 score: t.Optional(t.Integer()),
                 files: t.Optional(t.Array(t.String())),
-                category: t.Nullable(
+                category: t.Optional(t.Nullable(
                     t.Enum({
                         misc: "misc",
                         pwn: "pwn",
@@ -71,7 +71,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
                         osint: "osint",
                         web: "web",
                     })
-                ),
+                )),
             },
             {
                 $id: "#/components/schemas/challenge-update.internal",
@@ -207,6 +207,7 @@ export const ctfPlugin = new Elysia({ prefix: "ctf", name: "ctf" })
     .put(
         "/challenge/:id",
         async ({ ctf, body, params: { id } }) => {
+            console.log(body);
             let chall = await ctf.updateChallenge(id, body);
 
             if (chall === DBStatus.NonExistantError) {
