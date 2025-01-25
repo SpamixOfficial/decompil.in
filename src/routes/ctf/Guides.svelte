@@ -72,7 +72,7 @@
                 guideUserImages = [];
                 guides.forEach(async (x) => {
                     let user = await Api.getUser(x.userId);
-                    guideUserImages.push(user.image);
+                    guideUserImages[x.id] = user.image;
                 });
             }
         }
@@ -114,7 +114,7 @@
                                         guideUserImages = [];
                                         guides.forEach(async (x) => {
                                             let user = await Api.getUser(x.userId);
-                                            guideUserImages.push(user.image);
+                                            guideUserImages[x.id] = user.image;
                                         });
                                     }}>{chall.title}</a
                                 >
@@ -152,7 +152,7 @@
         class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
     >
         <!--Spaghetti down below, but it works doesn't it?-->
-        {#each guides as guide, i}
+        {#each guides as guide}
             <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
                 <div class="card-body">
                     <h2 class="card-title text-md mb-0">{new Date(guide.createdAt).toDateString()}</h2>
@@ -176,7 +176,7 @@
                             openUserPage = true;
                         }}
                     >
-                        <img class="rounded-full w-10" src={guideUserImages[i]} />
+                        <img class="rounded-full w-10" src={guideUserImages[guide.id]} />
                     </button>
                 </div>
             </div>
