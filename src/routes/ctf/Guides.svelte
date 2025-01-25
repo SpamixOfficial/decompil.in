@@ -24,6 +24,10 @@
             createdAt: "2025-01-16T19:44:29.000Z",
         },
     ]);
+    /**
+     * @type {String[]}
+     */
+    let guideUserImages = $state([]);
     let chosenGuide = $state({
         id: 1,
         body: "A body",
@@ -57,14 +61,22 @@
             if (challengeReq.success) {
                 chosenChallengeSolved = challengeReq.data.solved;
                 // openGuideEditor can only work if a real guide-page is opened and if user has solved
-                if (chosenChallengeSolved) { editorOpen = openGuideEditor };
+                if (chosenChallengeSolved) {
+                    editorOpen = openGuideEditor;
+                }
                 isGuideTable = true;
                 chosenChallenge = challengeId;
                 chosenChallengeTitle = challengeReq.data.title;
                 guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
+                // load all user avatars
+                guides.forEach(async (x) => {
+                    let user = await Api.getUser(x.userId);
+                    guideUserImages.push(user.image);
+                });
             }
         }
-        if (guideId !== null && challengeId !== null) { // guideId needs challengeId to display correctly
+        if (guideId !== null && challengeId !== null) {
+            // guideId needs challengeId to display correctly
             let response = await Api.getGuide(guideId);
             if (response.success === true) {
                 chosenGuide = response.data;
@@ -97,6 +109,11 @@
                                         chosenChallengeSolved = chall.solved;
                                         goto(`/ctf?page=3&challenge=${chosenChallenge}`);
                                         guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
+                                        // load all user avatars
+                                        guides.forEach(async (x) => {
+                                            let user = await Api.getUser(x.userId);
+                                            guideUserImages.push(user.image);
+                                        });
                                     }}>{chall.title}</a
                                 >
                             </li>
@@ -133,7 +150,7 @@
         class="h-1 grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 md:grid-cols-1 grid-flow-row-dense gap-1 items-start"
     >
         <!--Spaghetti down below, but it works doesn't it?-->
-        {#each guides as guide}
+        {#each guides as guide, i}
             <div class="card card-compact font-mono bg-base-100 w-96 shadow-2xl m-2 border border-base-200">
                 <div class="card-body">
                     <h2 class="card-title text-md mb-0">{new Date(guide.createdAt).toDateString()}</h2>
@@ -157,7 +174,7 @@
                             openUserPage = true;
                         }}
                     >
-                        <img class="rounded-full w-10" src="https://avatars.githubusercontent.com/u/99183771?v=4" />
+                        <img class="rounded-full w-10" src={guideUserImages[i]} />
                     </button>
                 </div>
             </div>
@@ -187,7 +204,7 @@
                     openUserPage = true;
                 }}
             >
-                <img class="rounded-full w-10" src="https://avatars.githubusercontent.com/u/99183771?v=4" />
+                <img class="rounded-full w-10" src={chosenGuideUser.image} />
             </button>
             <h3 class="text-xl font-bold">Guide by {chosenGuideUser.name}</h3>
         </div>
