@@ -36,7 +36,7 @@ pub struct Guide {
     user: User,
 
     #[serde(rename = "challenge")]
-    challenge: Challenge,
+    challenge: ChallengeNoFiles,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -58,6 +58,30 @@ pub struct ChallengeFile {
 
     #[serde(rename = "files")]
     files: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ChallengeNoFiles {
+    #[serde(rename = "id")]
+    id: usize,
+
+    #[serde(rename = "title")]
+    title: String,
+
+    #[serde(rename = "description")]
+    description: String,
+
+    #[serde(rename = "flag")]
+    flag: String,
+
+    #[serde(rename = "score")]
+    score: usize,
+
+    #[serde(rename = "solves")]
+    solves: usize,
+
+    #[serde(rename = "category")]
+    category: Option<ChallengeCategory>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
