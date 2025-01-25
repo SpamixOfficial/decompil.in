@@ -3,6 +3,7 @@
     import SettingsModal from "./SettingsModal.svelte";
     let { children, user, session, pageControl = $bindable(), signedIn } = $props();
     import { authClient } from "$lib/auth-client";
+    import { goto } from "$app/navigation";
     let openSettingsPage = $state(false);
     let profileImg = user.image || "";
 </script>
@@ -24,6 +25,7 @@
                 <a
                     onclick={() => {
                         pageControl = 0;
+                        goto('/ctf');
                     }}>Startpage</a
                 >
             </li>
@@ -31,6 +33,7 @@
                 <a
                     onclick={() => {
                         pageControl = 1;
+                        goto('/ctf');
                     }}>Challenges</a
                 >
             </li>
@@ -38,6 +41,7 @@
                 <a
                     onclick={() => {
                         pageControl = 2;
+                        goto('/ctf');
                     }}>Leaderboard</a
                 >
             </li>
@@ -45,6 +49,7 @@
                 <a
                     onclick={() => {
                         pageControl = 3;
+                        goto('/ctf');
                     }}>Guides</a
                 >
             </li>

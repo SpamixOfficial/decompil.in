@@ -72,10 +72,10 @@
     pages[4] = { title: "CTF", source: ctfPage };
 </script>
 
-<TerminalWindow height="{height}vh" width="{width}vw" {mobile}>
+<TerminalWindow height="{height}vh" width="{width}vw" style="display: flex; flex-direction: column; justify-content: space-between" {mobile}>
     {#each Object.entries(pages) as [id, page]}
-        {#if currentPage == id}
-            <div id="markdown-container" in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
+        {#if currentPage == Number(id)}
+            <div id="markdown-container" style="overflow: scroll" in:scale={{ delay: 250 }} out:scale={{ duration: 200 }}>
                 <SvelteMarkdown source={page.source} renderers={{ image: MarkdownImage }} />
             </div>
         {/if}
@@ -85,8 +85,8 @@
             {#each Object.entries(pages) as [id, page]}
                 <button
                     class={mobile == "false" ? "tabButton" : "mobileTabButton"}
-                    class:last={Object.values(pages).length == id}
-                    onclick={() => (currentPage = id)}>{page.title}</button
+                    class:last={Object.values(pages).length == Number(id)}
+                    onclick={() => (currentPage = Number(id))}>{page.title}</button
                 >
             {/each}
         </div>
@@ -97,8 +97,10 @@
         {#each Object.entries(pages) as [id, page]}
             <button
                 class={mobile == "false" ? "tabButton" : "mobileTabButton"}
-                class:last={Object.values(pages).length == id}
-                onclick={(currentPage = id)}>{page.title}</button
+                class:last={Object.values(pages).length == Number(id)}
+                onclick={() => {
+                    currentPage = Number(id);
+                }}>{page.title}</button
             >
         {/each}
     </div>
@@ -126,8 +128,9 @@
         border-width: 2px;
         border-color: var(--terminalBorderColor);
         width: 100%;
-        position: fixed;
-        bottom: 0;
+        margin-bottom: 0;
+        margin-top: auto;
+        align-self: flex-end;
     }
 
     .mobileTabBar {

@@ -5,6 +5,7 @@
     import Icon from "@iconify/svelte";
     import GuideEditor from "./GuideEditor.svelte";
     import ProfilePage from "./ProfilePage.svelte";
+    import { goto } from "$app/navigation";
 
     let { challs, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
 
@@ -94,6 +95,7 @@
                                         chosenChallenge = chall.id;
                                         chosenChallengeTitle = chall.title;
                                         chosenChallengeSolved = chall.solved;
+                                        goto(`/ctf?page=3&challenge=${chosenChallenge}`);
                                         guides = (await Api.loadAllChallGuides(chosenChallenge)).data;
                                     }}>{chall.title}</a
                                 >
@@ -121,6 +123,7 @@
                 class="btn sm:btn-md btn-sm btn-primary"
                 onclick={() => {
                     isGuideTable = false;
+                    goto("/ctf");
                 }}><Icon icon="mdi:close" width="24" height="24" /></button
             >
         </div>

@@ -2,8 +2,6 @@
     import Icon from "@iconify/svelte";
     import { fade } from "svelte/transition";
     import { Api } from "$lib/api";
-    import { redirect } from "@sveltejs/kit";
-    import { goto } from "$app/navigation";
 
     let { id, title, description, score, files, signedIn, solved, solves, category } = $props();
     let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
