@@ -153,7 +153,7 @@
     onMount(() => {
         // Some mobile specific stuff
         window.addEventListener("resize", () => {
-            verticalDisplay = window.innerWidth < 768;
+            verticalDisplay = window.innerWidth < 750;
             if (verticalDisplay) {
                 spotHeight = 27;
                 spotWidth = 100;
@@ -162,7 +162,7 @@
                 spotWidth = 30;
             }
         });
-        verticalDisplay = window.innerWidth < 768;
+        verticalDisplay = window.innerWidth < 750;
         if (verticalDisplay) {
             spotHeight = 27;
             spotWidth = 100;
@@ -185,12 +185,12 @@
                 spotImgSrc = spot_data.image_url;
                 spotTitle = spot_data.title;
                 spotArtist = "";
-                spot_data.artists.entries().forEach((element) => {
+                for (const element of spot_data.artists.entries()) {
                     const [index, e] = element;
                     spotArtist = spotArtist.concat(
                         `<a style="color: inherit" href=${e.url}>${index > 0 ? ", " : ""}${e.name}</a>`
                     );
-                });
+                };
                 //setBkg(await extractColors(spot_data.image_url));
                 await updateColorMap(spot_data.image_url);
                 setBkg();
@@ -215,7 +215,7 @@
         </div>
 
         {#if showSpot}
-            <div transition:scale style="display: inline-block; z-index: 1;">
+            <div transition:scale style="display: inline-block;">
                 <TerminalWindow
                     width="{spotWidth}vw"
                     height="{spotHeight}vh"

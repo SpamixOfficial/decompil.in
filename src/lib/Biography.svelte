@@ -6,7 +6,6 @@
     import TerminalWindow from "$lib/TerminalWindow.svelte";
     import { scale } from "svelte/transition";
     import SvelteMarkdown from "svelte-markdown";
-    import { onMount } from "svelte";
     import MarkdownImage from "./MarkdownImage.svelte";
     let { mobile, mobileVertical, mobileFullSize } = $props();
     let height = $derived.by(calcHeight);
@@ -56,7 +55,7 @@
                 width = mobileFullSize ? 100 : 70;
             }
         }
-    });*/
+    });*/ //Old code, not in use anymore
 
     let currentPage = $state(1);
     let pages = {
@@ -147,6 +146,7 @@
         width: 100%;
         position: fixed;
         bottom: 0;
+        z-index: 1;
     }
 
     .tabButton {

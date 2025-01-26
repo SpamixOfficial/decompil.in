@@ -7,10 +7,10 @@
 
     if (browser) {
         window.addEventListener("resize", () => {
-            phone = window.innerWidth < 768 || window.innerHeight < 600;
+            phone = window.innerWidth < 750 || window.innerHeight < 600;
         });
 
-        phone = window.innerWidth < 768 || window.innerHeight < 600;
+        phone = window.innerWidth < 750 || window.innerHeight < 600;
     }
 </script>
 {#if !phone}

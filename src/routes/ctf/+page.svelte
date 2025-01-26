@@ -39,9 +39,9 @@
 
     onMount(async () => {
         currentPage = Number(data.page);
-        mobileVertical = window.innerWidth < 768;
+        mobileVertical = window.innerWidth < 750;
         window.addEventListener("resize", () => {
-            mobileVertical = window.innerWidth < 768;
+            mobileVertical = window.innerWidth < 750;
         });
         const sessionResponse = await authClient.getSession();
         leaderboard = await Api.getLeaderboard();
