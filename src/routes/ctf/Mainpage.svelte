@@ -43,6 +43,6 @@
         in:fly={{ x: 200, delay: transitionDuration, duration: transitionDuration }}
         out:fly={{ x: 200, duration: transitionDuration }}
     >
-        <Guides {challs} {user} {guideId} {signedIn} {openGuideEditor} {challengeId}/>
+        <Guides {challs} {guideId} {signedIn} {openGuideEditor} {challengeId}/>
     </div>
 {/if}

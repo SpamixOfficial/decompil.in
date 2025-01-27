@@ -2,8 +2,15 @@
     import Icon from "@iconify/svelte";
     import { fade } from "svelte/transition";
     import { Api } from "$lib/api";
+    import { Parser, HtmlRenderer } from "commonmark";
 
     let { id, title, description, score, files, signedIn, solved, solves, category } = $props();
+
+    let markReader = new Parser();
+    let markWriter = new HtmlRenderer({safe: true});
+
+    let renderedDesc = $derived(markWriter.render(markReader.parse(description)));
+
     let shortenedDesc = $derived(description.length > 20 ? description.slice(0, 20 - 1) + "..." : description);
     let open = $state(false);
     let flagIcon = $state("material-symbols:flag-outline");
@@ -72,7 +79,7 @@
             >
         </form>
         <h3 class="text-xl font-bold">{title}</h3>
-        <p class="py-4 font-medium text-pretty">{description}</p>
+        <p class="py-4 font-medium text-pretty">{@html renderedDesc}</p>
         <!-- Files Dropdown -->
         {#if files.length !== 0}
             <div class="collapse collapse-arrow border-base-300 bg-base-200 border">

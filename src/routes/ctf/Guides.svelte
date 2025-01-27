@@ -3,11 +3,15 @@
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import Icon from "@iconify/svelte";
+    import { Parser, HtmlRenderer } from 'commonmark';
     import GuideEditor from "./GuideEditor.svelte";
     import ProfilePage from "./ProfilePage.svelte";
     import { goto } from "$app/navigation";
 
-    let { challs, guideId, user, signedIn, openGuideEditor, challengeId } = $props();
+    let { challs, guideId, signedIn, openGuideEditor, challengeId } = $props();
+
+    let markReader = new Parser();
+    let markWriter = new HtmlRenderer({safe: true});
 
     let isGuideOnDisplay = $state(false);
     let openUserPage = $state(false);
@@ -34,6 +38,7 @@
         userId: "12345678",
         createdAt: "2025-01-16T19:44:29.000Z",
     });
+    let renderedChosenGuideBody = $state("");
     let chosenGuideUser = $state({
         id: "lulz",
         name: "SpamixOfficial",
@@ -81,6 +86,7 @@
             let response = await Api.getGuide(guideId);
             if (response.success === true) {
                 chosenGuide = response.data;
+                renderedChosenGuideBody = markWriter.render(markReader.parse(chosenGuide.body));
                 isGuideOnDisplay = true;
             }
         }
@@ -164,6 +170,7 @@
                             onclick={async () => {
                                 await loadUserProfile(guide.userId);
                                 chosenGuide = guide;
+                                renderedChosenGuideBody = markWriter.render(markReader.parse(chosenGuide.body));
                                 isGuideOnDisplay = true;
                             }}>Open guide</button
                         >
@@ -211,7 +218,7 @@
             <h3 class="text-xl font-bold">Guide by {chosenGuideUser.name}</h3>
         </div>
         <div class="divider m-0"></div>
-        <p class="py-4">{chosenGuide.body}</p>
+        <p class="py-4">{@html renderedChosenGuideBody}</p>
         <div class="flex justify-between items-center">
             <div
                 class="h-5 p-3 bg-base-300 border-4 border-base-200 border-solid rounded-lg flex items-center justify-start"
