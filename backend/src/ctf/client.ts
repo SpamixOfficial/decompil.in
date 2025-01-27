@@ -1,6 +1,6 @@
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { challengeFilesTable, challengeGuidanceTable, challengeSolveTable, challengeTable } from "../drizzle/db/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, asc } from "drizzle-orm";
 import { DBStatus } from "../drizzle";
 import { user } from "../drizzle/db/auth-schema";
 import { number } from "better-auth/*";
@@ -164,7 +164,7 @@ class Ctf {
                 score: true,
                 githubUrl: true,
             },
-            orderBy: [desc(user.score)],
+            orderBy: [desc(user.score), asc(user.lastScoreChange)],
         });
 
         return leaderboard;
@@ -252,7 +252,7 @@ class Ctf {
 
     async awardPoints(userId: string, points: number) {
         await this.db.transaction(async (tx) => {
-            await tx.update(user).set({ score: sql`${user.score} + ${points}` }).where(eq(user.id, userId));
+            await tx.update(user).set({ score: sql`${user.score} + ${points}`, lastScoreChange: new Date() }).where(eq(user.id, userId));
         });
     }
 

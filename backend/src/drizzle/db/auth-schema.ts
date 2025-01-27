@@ -9,6 +9,7 @@ export const user = mysqlTable("user", {
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),
 	score: int("score").default(0).notNull(),
+    lastScoreChange: timestamp("last_score_change").defaultNow().notNull(),
     githubUrl: text("githubUrl"),
 });
 
