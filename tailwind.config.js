@@ -5,7 +5,8 @@ export default {
         extend: {
           colors: {
             "blurple": "#5865F2",
-            "github-black": "#181717"
+            "github-black": "#181717",
+            "slurple": "#4A154B"
           }
         },
     },

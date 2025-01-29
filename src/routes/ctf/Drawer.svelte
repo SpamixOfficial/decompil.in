@@ -4,6 +4,8 @@
     let { children, user, session, pageControl = $bindable(), signedIn } = $props();
     import { authClient } from "$lib/auth-client";
     import { goto } from "$app/navigation";
+    import LoginModal from "./LoginModal.svelte";
+    let loginModalOpen = $state(false);
     let openSettingsPage = $state(false);
     let profileImg = user.image || "";
 </script>
@@ -25,7 +27,7 @@
                 <a
                     onclick={() => {
                         pageControl = 0;
-                        goto('/ctf');
+                        goto("/ctf");
                     }}>Startpage</a
                 >
             </li>
@@ -33,7 +35,7 @@
                 <a
                     onclick={() => {
                         pageControl = 1;
-                        goto('/ctf');
+                        goto("/ctf");
                     }}>Challenges</a
                 >
             </li>
@@ -41,7 +43,7 @@
                 <a
                     onclick={() => {
                         pageControl = 2;
-                        goto('/ctf');
+                        goto("/ctf");
                     }}>Leaderboard</a
                 >
             </li>
@@ -49,7 +51,7 @@
                 <a
                     onclick={() => {
                         pageControl = 3;
-                        goto('/ctf');
+                        goto("/ctf");
                     }}>Guides</a
                 >
             </li>
@@ -57,21 +59,19 @@
                 <li
                     class="mt-auto duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-black hover:shadow-lg group"
                 >
-                    <a
+                    <button
                         class="flex items-center space-x-2"
                         onclick={() => {
-                            authClient.signIn.social({
-                                provider: "github",
-                            });
+                            loginModalOpen = !loginModalOpen;
                         }}
                     >
                         <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white">
-                            <Icon icon="simple-icons:github" width="24" height="24" />
+                            <Icon icon="mdi:login" width="24" height="24" />
                         </span>
                         <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white"
-                            >Sign in with Github</span
+                            >Sign in</span
                         >
-                    </a>
+                    </button>
                 </li>
             {:else}
                 <button class="btn btn-circle btn-ghost bottom-4 mt-auto hover:ring hover:ring-secondary">
@@ -89,4 +89,6 @@
 </div>
 {#if signedIn}
     <SettingsModal bind:open={openSettingsPage} bind:signedIn {user} {session} />
+{:else}
+    <LoginModal bind:open={loginModalOpen} />
 {/if}
