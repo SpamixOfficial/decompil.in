@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { genericOAuth } from "better-auth/plugins"
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../drizzle";
 
@@ -15,6 +16,10 @@ export const auth = betterAuth({
             clientId: process.env.GITHUB_CLIENT_ID!,
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         },
+        discord: { 
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET! 
+        }, 
     },
     baseURL: process.env.APP_BASE_URL!,
     trustedOrigins: [process.env.FRONTEND_URL!, process.env.APP_BASE_URL!],
@@ -27,5 +32,16 @@ export const auth = betterAuth({
                 type: "string"
             }
         }
-    }
+    },
+    plugins: [
+        genericOAuth({
+            config: [
+                {
+                    providerId: "slack",
+                    clientId: process.env.SLACK_CLIENT_ID!,
+                    clientSecret: process.env.SLACK_CLIENT_SECRET!
+                }
+            ]
+        })
+    ]
 });
