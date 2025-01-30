@@ -3,7 +3,9 @@
     import SettingsModal from "./SettingsModal.svelte";
     import { authClient } from "$lib/auth-client";
     import Icon from "@iconify/svelte";
+    import LoginModal from "./LoginModal.svelte";
     let openSettingsPage = $state(false);
+    let openLoginModal = $state(false);
     let profileImg = user.image || "";
 </script>
 
@@ -83,9 +85,7 @@
             <button
                 class="btn btn-ghost"
                 onclick={() => {
-                    authClient.signIn.social({
-                        provider: "github",
-                    });
+                    openLoginModal = !openLoginModal;
                 }}
             >
                 <span class="text-black"><Icon icon="mdi:sign-in" width="24" height="24" /></span>
@@ -98,4 +98,6 @@
 </div>
 {#if signedIn}
     <SettingsModal bind:open={openSettingsPage} bind:signedIn={signedIn} {user} {session}/>
+{:else}
+    <LoginModal bind:open={openLoginModal}/>
 {/if}

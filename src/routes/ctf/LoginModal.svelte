@@ -22,7 +22,7 @@
         <div class="divider mt-0 mb-0"></div>
         <div>
             <button
-                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-black hover:shadow-lg group"
+                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-black hover:shadow-lg focus:duration-300 focus:bg-black focus:shadow-lg group"
             >
                 <a
                     class="flex items-center space-x-2"
@@ -32,16 +32,19 @@
                         });
                     }}
                 >
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white">
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white"
+                    >
                         <Icon icon="simple-icons:github" width="24" height="24" />
                     </span>
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white text-lg"
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white text-lg"
                         >Sign in with Github</span
                     >
                 </a>
             </button>
             <button
-                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-blurple hover:shadow-lg group"
+                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 focus:duration-300 hover:bg-blurple focus:bg-blurple hover:shadow-lg focus:shadow-lg group"
             >
                 <a
                     class="flex items-center space-x-2"
@@ -51,30 +54,36 @@
                         });
                     }}
                 >
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white">
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white"
+                    >
                         <Icon icon="simple-icons:discord" width="24" height="24" />
                     </span>
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white text-lg"
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white text-lg"
                         >Sign in with Discord</span
                     >
                 </a>
             </button>
             <button
-                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-slurple hover:shadow-lg group"
+                class="btn bg-base-100 border-none shadow-none w-full mt-3 duration-300 bottom-4 inset-x-0 rounded-lg hover:duration-300 hover:bg-slurple hover:shadow-lg focus:duration-300 focus:bg-slurple focus:shadow-lg group"
             >
                 <a
                     class="flex items-center space-x-2"
                     onclick={() => {
                         authClient.signIn.oauth2({
                             providerId: "slack",
-                            callbackURL: "/ctf"
+                            callbackURL: "/ctf",
                         });
                     }}
                 >
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white">
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white"
+                    >
                         <Icon icon="simple-icons:slack" width="24" height="24" />
                     </span>
-                    <span class="text-github-black duration-300 group-hover:duration-300 group-hover:text-white text-lg"
+                    <span
+                        class="text-github-black duration-300 group-hover:duration-300 group-focus:duration-300 group-hover:text-white group-focus:text-white text-lg"
                         >Sign in with Slack</span
                     >
                 </a>

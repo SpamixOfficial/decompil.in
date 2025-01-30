@@ -17,8 +17,8 @@ export const auth = betterAuth({
             clientSecret: process.env.GITHUB_CLIENT_SECRET!,
         },
         discord: { 
-            clientId: process.env.DISCORD_CLIENT_ID as string,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET as string 
+            clientId: process.env.DISCORD_CLIENT_ID!,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET! 
         }, 
     },
     baseURL: process.env.APP_BASE_URL!,
@@ -39,7 +39,10 @@ export const auth = betterAuth({
                 {
                     providerId: "slack",
                     clientId: process.env.SLACK_CLIENT_ID!,
-                    clientSecret: process.env.SLACK_CLIENT_SECRET!
+                    clientSecret: process.env.SLACK_CLIENT_SECRET!,
+                    discoveryUrl: "https://slack.com/.well-known/openid-configuration",
+                    scopes: ['openid', 'profile', 'email'],
+                    redirectURI: `${process.env.APP_BASE_URL}/api/auth/oauth2/callback/slack`
                 }
             ]
         })
