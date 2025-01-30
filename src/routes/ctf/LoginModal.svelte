@@ -1,6 +1,7 @@
 <script>
     import Icon from "@iconify/svelte";
     import { authClient } from "$lib/auth-client";
+    import { PUBLIC_APP_BASE } from "$env/static/public";
 
     let { open = $bindable() } = $props();
 </script>
@@ -73,7 +74,7 @@
                     onclick={() => {
                         authClient.signIn.oauth2({
                             providerId: "slack",
-                            callbackURL: "/ctf",
+                            callbackURL: `${PUBLIC_APP_BASE}/ctf`,
                         });
                     }}
                 >
