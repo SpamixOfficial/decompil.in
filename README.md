@@ -12,7 +12,7 @@ If you somehow get bored by all of this you can visit the inbuilt `Competitive C
 
 You can find the site by either clicking the giffel on the homepage, or by heading over to [https://decompil.in/ctf](https://decompil.in/ctf)!
 
-*PS: You log in through GitHub :D* 
+*PS: You can log in through GitHub, Slack or Discord :D* 
 
 So, that's my homepage! Want to host it for yourself? Check the instructions down below!
 
