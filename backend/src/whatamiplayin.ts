@@ -42,6 +42,14 @@ declare module "bun" {
 // This is what actually contacts the spotify api every 2 seconds
 async function cronJob() {
     if (Bun.env.SPOTIFY_TOKEN === undefined) {
+        Bun.env.SPOTIFY_DATA = Playing.from({
+            is_playing: false,
+            title: "",
+            album: "",
+            image_url: "",
+            artists: [],
+            last_changed: null,
+        });
         return;
     }
     let token = await genAuthTokenSpot();
@@ -66,6 +74,18 @@ async function cronJob() {
         return;
     }
     let song = await rq.json();
+    // Crash if type is not track, so make sure it is here :-)
+    if (song.currently_playing_type != "track") {
+        Bun.env.SPOTIFY_DATA = Playing.from({
+            is_playing: false,
+            title: "",
+            album: "",
+            image_url: "",
+            artists: [],
+            last_changed: null,
+        });
+        return;
+    }
     let artists = [];
     for (let artist of song.item.artists) {
         artists.push({ name: artist.name, url: artist.external_urls.spotify });
