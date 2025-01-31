@@ -75,7 +75,7 @@ async function cronJob() {
     }
     let song = await rq.json();
     // Crash if type is not track, so make sure it is here :-)
-    if (song.currently_playing_type != "track") {
+    if (song.currently_playing_type != "track" || song.currently_playing_type === null) {
         Bun.env.SPOTIFY_DATA = Playing.from({
             is_playing: false,
             title: "",
