@@ -74,8 +74,24 @@ async function cronJob() {
         return;
     }
     let song = await rq.json();
-    // Crash if type is not track, so make sure it is here :-)
-    if (song.currently_playing_type != "track" || song.currently_playing_type === null) {
+    let artists = [];
+    // Hotfix through github editor, will fix later today!
+    try {
+        /*if (song.currently_playing_type != "track" || song.currently_playing_type === null) {
+            Bun.env.SPOTIFY_DATA = Playing.from({
+                is_playing: false,
+                title: "",
+                album: "",
+                image_url: "",
+                artists: [],
+                last_changed: null,
+            });
+            return;
+        }*/
+        for (let artist of song.item.artists) {
+            artists.push({ name: artist.name, url: artist.external_urls.spotify });
+        }
+    } catch {
         Bun.env.SPOTIFY_DATA = Playing.from({
             is_playing: false,
             title: "",
@@ -85,10 +101,6 @@ async function cronJob() {
             last_changed: null,
         });
         return;
-    }
-    let artists = [];
-    for (let artist of song.item.artists) {
-        artists.push({ name: artist.name, url: artist.external_urls.spotify });
     }
 
     Bun.env.SPOTIFY_DATA = Playing.from({
