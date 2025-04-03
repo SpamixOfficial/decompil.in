@@ -17,6 +17,7 @@ services:
             - 'label=type:docker_t'
         environment:
             - TRUST_DOWNSTREAM_PROXY=false
+        restart: "always"
     frontend:
         container_name: decompil.in-frontend
         image: bun-sveltekit-frontend
@@ -33,6 +34,7 @@ services:
             - "backend"
         networks:
             - proxy
+        restart: "unless-stopped"
     backend:
         container_name: decompil.in-backend
         image: bun-elysiajs-backend
@@ -50,6 +52,7 @@ services:
         networks:
             - proxy
             - backend
+        restart: "unless-stopped"
     mysql:
         image: mysql:latest
         container_name: decompil.in-database
@@ -73,3 +76,4 @@ networks:
     backend:
     proxy:
       name: proxy
+      external: true
