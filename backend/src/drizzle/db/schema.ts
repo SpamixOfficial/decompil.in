@@ -87,7 +87,6 @@ export const challengeGuidanceTableRelations = relations(
     })
 );
 
-
 /*export const usersTable = mysqlTable("users", {
     id: int("id").autoincrement().primaryKey(),
     username: varchar({ length: 255 }).notNull().unique(),

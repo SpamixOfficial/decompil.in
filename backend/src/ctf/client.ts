@@ -3,7 +3,7 @@ import { challengeFilesTable, challengeGuidanceTable, challengeSolveTable, chall
 import { eq, and, sql, desc, asc } from "drizzle-orm";
 import { DBStatus } from "../drizzle";
 import { user } from "../drizzle/db/auth-schema";
-import { number } from "better-auth/*";
+import { access_log } from "../drizzle/db/log-schema";
 
 /**
  * A challenge object
@@ -16,7 +16,7 @@ import { number } from "better-auth/*";
 
 class Ctf {
     constructor(
-        public db: MySql2Database<typeof import("../drizzle/db/schema") & typeof import("../drizzle/db/auth-schema")>
+        public db: MySql2Database<typeof import("../drizzle/db/schema") & typeof import("../drizzle/db/auth-schema") & typeof import("../drizzle/db/log-schema")>
     ) {}
     async getChallenges(userid?: string) {
         // Get all challenge items but remove flag, cause returning the flag would kind of ruin the challenge am I right? :D
@@ -361,6 +361,19 @@ class Ctf {
         await this.db.transaction(async (tx) => {
             await tx.insert(challengeGuidanceTable).values(insertData);
         });
+    }
+
+    async log_ip(data: {ip: string, country: string, path: string, ua: string, cookie: string}) {
+        await this.db.transaction(async (tx) => {
+            let result = await tx.query.access_log.findFirst({
+                where: eq(access_log, data)
+            }).execute();
+            if (result !== undefined) {
+                await tx.update(access_log).set({count: result.count+1}).where(eq(access_log, result)); // increment counter
+            } else {
+                await tx.insert(access_log).values(data); // insert new object
+            }
+        })
     }
 }
 

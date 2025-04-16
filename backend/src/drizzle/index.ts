@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import * as schema from "./db/schema";
 import * as auth_schema from "./db/auth-schema";
+import * as log_schema from "./db/log-schema";
 import mysql from "mysql2/promise";
 
 // Some bun env variable declarations
@@ -29,4 +30,4 @@ const pool = mysql.createPool({
     database: Bun.env.MYSQL_DATABASE,
 });
 
-export const db = drizzle({ client: pool, schema: {...schema, ...auth_schema}, mode: "default" });
+export const db = drizzle({ client: pool, schema: {...schema, ...auth_schema, ...log_schema}, mode: "default" });

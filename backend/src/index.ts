@@ -1,4 +1,4 @@
-import { Elysia, Context } from "elysia";
+import { Elysia, Context, error, StatusMap } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import { plugin as playPlugin } from "./whatamiplayin";
 import { setupPlugin } from "./setup";
@@ -9,6 +9,8 @@ import { userPlugin } from "./user";
 import { auth } from "./utils/auth";
 import cors from "@elysiajs/cors";
 import { authentication } from "./authentication";
+import { Ctf } from "./ctf/client";
+import { db } from "./drizzle";
 
 // Better auth
 const betterAuthView = (context: Context) => {
@@ -23,7 +25,37 @@ const betterAuthView = (context: Context) => {
     }
 };
 
+const ctf = new Ctf(db);
+
+const log_data = async (data: {ip: string, country: string, path: string, ua: string, cookie: string}) => {
+    await ctf.log_ip(data);
+};
+
 const app = new Elysia()
+    .onError(async ({}) => {
+        return error(500);
+    })
+    .trace(async ({ onRequest, context, set }) => {
+        onRequest(({ onStop }) => {
+            onStop(() => {
+                let data = {
+                    ip: String(set.headers["CF-Connecting-IP"]),
+                    country: String(set.headers["CF-IPCountry"]),
+                    path: context.path,
+                    ua: String(set.headers["User-Agent"]),
+                    cookie: String(set.headers["Cookie"]),
+                };
+
+                if (data.ip === "undefined" || data.country === "undefined") {
+                    console.log("[WARNING WARNING] Someone has tried to accessed the server without cloudflare: " + context.server?.requestIP(context.request)?.address)
+                    error(418);
+                    return;
+                };
+
+                log_data(data);
+            });
+        });
+    })
     .use(authentication)
     .use(
         logger({
