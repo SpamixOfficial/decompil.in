@@ -4,10 +4,15 @@ class Api {
     /**
      * Get all challenges
      */
-    static async loadAllChalls() {
-        let response = await fetch(`${PUBLIC_API_URL}/ctf/challenges`, {
-            credentials: "include",
-        });
+    static async loadAllChalls() {;
+        let response = new Response();
+        try {
+            response = await fetch(`${PUBLIC_API_URL}/ctf/challenges`, {
+                credentials: "include",
+            });
+        } catch(e) {
+            response = new Response(new Blob(), {status: 500}); // Really code doesn't matter as long as it isn't 200!
+        }
         if (response.status != 200) {
             return {
                 success: false,
@@ -99,8 +104,12 @@ class Api {
     }
 
     static async getLeaderboard() {
-        let leaderboard = await fetch(`${PUBLIC_API_URL}/ctf/leaderboard`);
-        return await leaderboard.json();
+        try {
+            let leaderboard = await fetch(`${PUBLIC_API_URL}/ctf/leaderboard`);
+            return await leaderboard.json();
+        } catch(e) {
+            return {}
+        }
     }
 
     /**

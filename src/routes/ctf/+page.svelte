@@ -15,7 +15,7 @@
     let user = $state({});
     let session = $state({});
     let signedIn = $state(false);
-
+    let error = $state(false);
     // Some prefill items which go poof when data is loaded
     // Mainly here to not make typescript checker go mad
     let challs = $state([
@@ -36,7 +36,6 @@
             score: 2147483647,
         },
     ]);
-
     onMount(async () => {
         currentPage = Number(data.page);
         mobileVertical = window.innerWidth < 750;
@@ -50,12 +49,12 @@
             user = sessionResponse.data.user;
             session = sessionResponse.data.session;
         }
-
+        
         const challResponse = await Api.loadAllChalls();
         if (challResponse.success) {
             challs = challResponse.data;
         } else {
-            challs = [
+            challs = [  
                 {
                     title: "Something went wrong!",
                     description: challResponse.error || "Woah there wasn't even an error message (that's bad)",
@@ -63,6 +62,9 @@
                     files: [],
                 },
             ];
+            error = true;
+            // We don't want to load the page if no data can be loaded - better to display funny error!
+            return;
         }
 
         // if the user is signed in we don't have to introduce them again
@@ -76,7 +78,7 @@
 </script>
 
 {#if !pageLoaded}
-    <Loading />
+    <Loading bind:error={error}/>
 {:else if !mobileVertical}
     <Drawer bind:pageControl={currentPage} {signedIn} {user} {session}>
         <Mainpage {leaderboard} {user} bind:currentPage {challs} {signedIn} guideId={data.guideId} openGuideEditor={data.openGuideEditor} challengeId={data.challengeId}/>
