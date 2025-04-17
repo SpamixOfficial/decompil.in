@@ -75,26 +75,8 @@ async function cronJob() {
     }
     let song = await rq.json();
     let artists = [];
-    // Hotfix through github editor, will fix later today!
-    // 
-    // Okay I am back now a few months later, turns out I didn't fix it later that day. 
-    // Procrastination, am I right?
-    try {
-        /*if (song.currently_playing_type != "track" || song.currently_playing_type === null) {
-            Bun.env.SPOTIFY_DATA = Playing.from({
-                is_playing: false,
-                title: "",
-                album: "",
-                image_url: "",
-                artists: [],
-                last_changed: null,
-            });
-            return;
-        }*/
-        for (let artist of song.item.artists) {
-            artists.push({ name: artist.name, url: artist.external_urls.spotify });
-        }
-    } catch {
+    // Podcast bug fix :D
+    if (song.currently_playing_type != "track" || song.currently_playing_type === null) {
         Bun.env.SPOTIFY_DATA = Playing.from({
             is_playing: false,
             title: "",
@@ -104,6 +86,9 @@ async function cronJob() {
             last_changed: null,
         });
         return;
+    }
+    for (let artist of song.item.artists) {
+        artists.push({ name: artist.name, url: artist.external_urls.spotify });
     }
 
     Bun.env.SPOTIFY_DATA = Playing.from({
@@ -175,7 +160,17 @@ export const plugin = new Elysia({ prefix: "whatamiplayin", name: "spotify" })
             run() {
                 try {
                     cronJob();
-                } catch {}
+                } catch {
+                    // In case it fails we don't want frontend shitting itself :D
+                    Bun.env.SPOTIFY_DATA = Playing.from({
+                        is_playing: false,
+                        title: "",
+                        album: "",
+                        image_url: "",
+                        artists: [],
+                        last_changed: null,
+                    });
+                }
             },
         })
     )
@@ -194,6 +189,6 @@ export const plugin = new Elysia({ prefix: "whatamiplayin", name: "spotify" })
                 ),
                 last_changed: t.Nullable(t.Number()),
             }),
-            503: t.String()
+            503: t.String(),
         },
     });
