@@ -19,8 +19,8 @@ interface Env {
 type MaintenanceStatus = {
 	outage: boolean;
 	message: string;
-	started: Date;
-	estimated_end?: Date;
+	started: number;
+	estimated_end?: number;
 };
 
 interface MaintenanceStatusReq {
@@ -33,7 +33,7 @@ async function get_maintenance(env: Env): Promise<MaintenanceStatus> {
 	let status: MaintenanceStatus = {
 		outage: false,
 		message: '',
-		started: new Date(0),
+		started: 0,
 	};
 	status.outage = ((await env.MAINTENANCE_STATUS.get('outage')) ?? 'false') == 'true';
 	if (!status.outage) {
@@ -41,9 +41,9 @@ async function get_maintenance(env: Env): Promise<MaintenanceStatus> {
 	}
 
 	status.message = (await env.MAINTENANCE_STATUS.get('message')) ?? 'Idk, I have forgotten to set a message :(';
-	status.started = new Date(+((await env.MAINTENANCE_STATUS.get('started')) ?? 0));
+	status.started = +((await env.MAINTENANCE_STATUS.get('started')) ?? 0)
 	let estimated_end: string | null = await env.MAINTENANCE_STATUS.get('estimated_end');
-	status.estimated_end = estimated_end !== null ? new Date(+estimated_end) : undefined;
+	status.estimated_end = estimated_end !== null ? +estimated_end : undefined;
 
 	return status;
 }
@@ -74,7 +74,6 @@ export default {
 					var auth_header = request.headers.get("Authorization");
 					
 					if (auth_header == null || auth_header !== env.API_KEY) {
-						console.log("nuhuh");
 					 	return new Response('Not Found', { status: 404 });
 					}
 
@@ -85,6 +84,12 @@ export default {
 					} catch (_) {
 						return new Response('Not Found', { status: 404 });
 					}
+
+					if (!body) {
+						return new Response('Not Found', { status: 404 });
+					}
+
+					body = body || {};
 
 					let resp = await set_maintenance(env, body);
 					return new Response(resp ? "Ok :3" : "nuh", {status: resp ? 200 : 404});

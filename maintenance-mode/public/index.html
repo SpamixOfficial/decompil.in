@@ -9,34 +9,35 @@
 
 <body>
 	<div class="container">
-		<div>
-			<h1 id="heading" class="weight-300"></h1>
-			<p>This page comes from a static asset stored at `public/index.html` as configured
-				in `wrangler.jsonc`.</p>
-			<button id="button" type="button">Fetch a random UUID</button>
-			<output id="random" for="button"></output>
-			<script>
-				fetch('/message')
-					.then((resp) => resp.text())
-					.then((text) => {
-						const h1 = document.getElementById('heading');
-						h1.textContent = text;
-					});
-
-				const button = document.getElementById("button");
-				button.addEventListener("click", () => {
-					fetch('/random')
-						.then((resp) => resp.text())
-						.then((text) => {
-							const random = document.getElementById('random');
-							random.textContent = text;
-						});
-				});
-			</script>
+		<div id="inside">
+			<h1 class="weight-300" id="title">The site is currently under maintenance</h1>
+			<p id="message"></p>
+			<hr>
+			<p>This outage started at: <strong id="started"></strong></p>
+			<p>This outage is expected to end at: <b id="expected_end"></b></p>
 		</div>
 	</div>
 </body>
 
+<script>
+	async function get_and_set_msg() {
+		let resp = await fetch('/status');
+		let obj = await resp.json();
+		if (!obj["outage"]) {
+			document.getElementById("title").innerText = "The site is currently not under maintenance, so this site shouldn't display at all!";
+			return;
+		}
+
+		document.getElementById("message").innerText = obj["message"]
+		let started_at = new Date(obj["started"]).toLocaleString();
+		let expected_end = obj["estimated_end"] === undefined ? "Unknown" : new Date(obj["estimated_end"] ?? 0).toLocaleString();
+		console.log(started_at, expected_end);
+		document.getElementById("started").innerText = started_at;
+		document.getElementById("expected_end").innerText = expected_end;
+	}
+
+	get_and_set_msg()
+</script>
 
 </html>
 
@@ -63,6 +64,10 @@
 		min-height: 100%;
 	}
 
+	p {
+		font-weight: 100;
+	}
+
 	body {
 		margin: 0;
 		min-height: 100%;
@@ -80,7 +85,6 @@
 	* {
 		font-family: "Roboto Mono", monospace;
 		font-optical-sizing: auto;
-		font-weight: 100;
 		font-style: normal;
 		color: white;
 	}
