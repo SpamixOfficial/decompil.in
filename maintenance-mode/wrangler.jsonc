@@ -20,12 +20,6 @@
 			"id": "df025ae6753b4cadb554c1446bbe5072"
 		}
 	],
-	"routes": [
-		{
-			"pattern": "decompil.in",
-			"custom_domain": true
-		}
-	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
