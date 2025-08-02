@@ -7,9 +7,7 @@
 	"name": "maintenance-mode",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-08-01",
-	"compatibility_flags": [
-		"global_fetch_strictly_public"
-	],
+	"compatibility_flags": ["global_fetch_strictly_public"],
 	"assets": {
 		"directory": "./public"
 	},
@@ -20,6 +18,12 @@
 		{
 			"binding": "MAINTENANCE_STATUS",
 			"id": "df025ae6753b4cadb554c1446bbe5072"
+		}
+	],
+	"routes": [
+		{
+			"pattern": "decompil.in",
+			"custom_domain": true
 		}
 	]
 	/**
