@@ -32,7 +32,8 @@ const log_data = async (data: {ip: string, country: string, path: string, ua: st
 };
 
 const app = new Elysia()
-    .onError(async ({}) => {
+    .onError(async ({ error: e, code }) => {
+        if (code !== 'NOT_FOUND') console.error(e);
         return error(500);
     })
     .trace(async ({ onRequest, context, set }) => {
